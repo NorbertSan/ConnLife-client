@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import GlobalStyles from "utils/GlobalStyles";
+import Home from "pages/Home";
+import Profile from "pages/Profile";
+import PostDetails from "pages/PostDetails";
+import Login from "pages/Login";
+import SignUp from "pages/SignUp";
+import Notifications from "pages/Notifications";
+import { Route, BrowserRouter, Switch } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
+const App = () => (
+  <BrowserRouter>
+    <GlobalStyles />
+    <Switch>
+      <Route exact path="/" component={Home} />
+      <Route exact path="/user/:nickName" component={Profile} />
+      <Route
+        exact
+        path="/user/:nickName/post/:post_id"
+        component={PostDetails}
+      />
+      <Route exact path="/login" component={Login} />
+      <Route exact path="/signUp" component={SignUp} />
+      <Route exact path="/notifications" component={Notifications} />
+    </Switch>
+  </BrowserRouter>
+);
 export default App;
