@@ -1,16 +1,21 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import theme from "utils/theme";
+import PropTypes from "prop-types";
+
+// COMPONENTS
 import NickName from "components/atoms/NickName";
 import BackButton from "components/atoms/BackButton";
 import UserInfo from "components/LoggedUserProfile/UserInfo";
 import Button from "components/atoms/Button";
 import UpdateProfile from "components/profile/UpdateProfile";
 import UserBar from "components/profile/UserBar";
-import theme from "utils/theme";
+
+// REDUX STUFF
+import { connect } from "react-redux";
 
 const StyledWrapper = styled.div`
-  /* padding: 10px; */
   position: relative;
   ${({ isUpdateProfileOpen }) =>
     isUpdateProfileOpen &&
@@ -54,29 +59,45 @@ class ProfileView extends React.Component {
   closeUpdateProfile = () => this.setState({ isUpdateProfileOpen: false });
   render() {
     const { isUpdateProfileOpen } = this.state;
+    const { auth } = this.props;
     return (
       <>
-        <UpdateProfile
-          closeProfile={this.closeUpdateProfile}
-          isOpen={isUpdateProfileOpen}
-        />
-        <StyledWrapper isUpdateProfileOpen={isUpdateProfileOpen}>
-          <StyledBackLink to="/">
-            <BackButton />
-          </StyledBackLink>
-          <StyledHeader>
-            <StyledNickName>norbasss</StyledNickName>
-            <span>3 Posts</span>
-          </StyledHeader>
-          <StyledRectangle />
-          <UserInfo moreInfo />
-          <StyledButton secondary onClick={this.openUpdateProfile}>
-            Set up profile
-          </StyledButton>
-          <UserBar />
-        </StyledWrapper>
+        {!auth ? (
+          <Redirect to="/login" />
+        ) : (
+          <>
+            <UpdateProfile
+              closeProfile={this.closeUpdateProfile}
+              isOpen={isUpdateProfileOpen}
+            />
+            <StyledWrapper isUpdateProfileOpen={isUpdateProfileOpen}>
+              <StyledBackLink to="/">
+                <BackButton />
+              </StyledBackLink>
+              <StyledHeader>
+                <StyledNickName>norbasss</StyledNickName>
+                <span>3 Posts</span>
+              </StyledHeader>
+              <StyledRectangle />
+              <UserInfo moreInfo />
+              <StyledButton secondary onClick={this.openUpdateProfile}>
+                Set up profile
+              </StyledButton>
+              <UserBar />
+            </StyledWrapper>
+          </>
+        )}
       </>
     );
   }
 }
-export default ProfileView;
+
+const mapStateToProps = (state) => ({
+  auth: state.user.auth,
+});
+
+ProfileView.propTypes = {
+  auth: PropTypes.bool.isRequired,
+};
+
+export default connect(mapStateToProps)(ProfileView);

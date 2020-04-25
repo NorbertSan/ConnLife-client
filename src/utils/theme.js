@@ -7,6 +7,7 @@ const theme = {
     secondary: "#f4eeff", // whiteish
     tertiary: "#1b262c", // dark blueish
     quaternary: "#272121",
+    error: "#c70039",
   },
   fontSize: {
     xs: "1.0rem",

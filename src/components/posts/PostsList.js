@@ -1,46 +1,43 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
+
+// COMPONENTS
 import PostItem from "components/posts/PostItem";
 
-const posts = [
-  {
-    nickName: "Johhny",
-    body:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Asperiores quod quia ea quam officiis nam",
-    createdAt: new Date(),
-    likesCount: 2,
-    commentsCount: 3,
-  },
-  {
-    nickName: "Johhny",
-    body:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Asperiores quod quia ea quam officiis nam",
-    createdAt: new Date(),
-    likesCount: 2,
-    commentsCount: 3,
-  },
-  {
-    nickName: "Johhny",
-    body:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Asperiores quod quia ea quam officiis nam",
-    createdAt: new Date(),
-    likesCount: 2,
-    commentsCount: 3,
-  },
-];
+// REDUX STUFF
+import { connect } from "react-redux";
+import { getAllPosts } from "redux/actions/dataActions";
 
 const StyledWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const PostsList = () => (
-  <StyledWrapper>
-    {posts &&
-      posts.map((post) => (
-        <PostItem post={post} key={`post:${post.post_id}`} />
-      ))}
-  </StyledWrapper>
-);
+class PostsList extends React.Component {
+  componentDidMount() {
+    this.props.getAllPosts();
+  }
+  render() {
+    const { posts } = this.props;
+    return (
+      <StyledWrapper>
+        {posts &&
+          posts.map((post) => (
+            <PostItem post={post} key={`post:${post.post_id}`} />
+          ))}
+      </StyledWrapper>
+    );
+  }
+}
 
-export default PostsList;
+const mapStateToProps = (state) => ({
+  posts: state.data.posts,
+});
+
+PostsList.propTypes = {
+  posts: PropTypes.array.isRequired,
+  getAllPosts: PropTypes.func.isRequired,
+};
+
+export default connect(mapStateToProps, { getAllPosts })(PostsList);

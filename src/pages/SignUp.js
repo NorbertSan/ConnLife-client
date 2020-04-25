@@ -1,10 +1,19 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
+import theme from "utils/theme";
+
+// COMPONENTS
+import Loader from "react-loader-spinner";
 import ValidateError from "components/atoms/ValidateError";
 import Input from "components/atoms/Input";
 import Button from "components/atoms/Button";
 import Heading from "components/atoms/Heading";
 import Navbar from "components/Navbar/Navbar";
+
+// REDUX STUFF
+import { connect } from "react-redux";
+import { createAccount } from "redux/actions/userActions";
 
 const StyledWrapper = styled.form`
   display: flex;
@@ -28,7 +37,7 @@ const StyledButton = styled(Button)`
   padding-right: 40px;
 `;
 const StyledValidateError = styled(ValidateError)`
-  margin-top: 2px;
+  margin-top: 5px;
 `;
 
 class SignUp extends React.Component {
@@ -44,6 +53,10 @@ class SignUp extends React.Component {
     this.setState({
       [e.target.id]: e.target.value,
     });
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.createAccount(this.state, this.props.history);
+  };
   render() {
     const {
       email,
@@ -53,15 +66,18 @@ class SignUp extends React.Component {
       confirmPassword,
       nickName,
     } = this.state;
+    const { errors, loading } = this.props;
     return (
       <>
         <Navbar />
-        <StyledWrapper autoComplete="off">
+        <StyledWrapper autoComplete="off" onSubmit={this.handleSubmit}>
           <StyledHeading>Sign up</StyledHeading>
           <StyledInputField>
             <label>Email:</label>
             <Input value={email} id="email" onChange={this.handleInputChange} />
-            <StyledValidateError>Bad format</StyledValidateError>
+            {errors.email && (
+              <StyledValidateError>{errors.email}</StyledValidateError>
+            )}
           </StyledInputField>
           <StyledInputField>
             <label>First name:</label>
@@ -70,6 +86,9 @@ class SignUp extends React.Component {
               id="firstName"
               onChange={this.handleInputChange}
             />
+            {errors.firstName && (
+              <StyledValidateError>{errors.firstName}</StyledValidateError>
+            )}
           </StyledInputField>
           <StyledInputField>
             <label>Last name:</label>
@@ -78,18 +97,26 @@ class SignUp extends React.Component {
               id="lastName"
               onChange={this.handleInputChange}
             />
+            {errors.lastName && (
+              <StyledValidateError>{errors.lastName}</StyledValidateError>
+            )}
           </StyledInputField>
           <StyledInputField>
             <label>Password:</label>
             <Input
+              type="password"
               value={password}
               id="password"
               onChange={this.handleInputChange}
             />
+            {errors.password && (
+              <StyledValidateError>{errors.password}</StyledValidateError>
+            )}
           </StyledInputField>
           <StyledInputField>
             <label>Confirm password:</label>
             <Input
+              type="password"
               value={confirmPassword}
               id="confirmPassword"
               onChange={this.handleInputChange}
@@ -102,12 +129,37 @@ class SignUp extends React.Component {
               id="nickName"
               onChange={this.handleInputChange}
             />
+            {errors.nickName && (
+              <StyledValidateError>{errors.nickName}</StyledValidateError>
+            )}
           </StyledInputField>
-          <StyledButton>Create account</StyledButton>
+          <StyledButton secondary>
+            {loading ? (
+              <Loader
+                type="Oval"
+                color={theme.colors.primary}
+                height={30}
+                width={30}
+              />
+            ) : (
+              "Create account"
+            )}
+          </StyledButton>
         </StyledWrapper>
       </>
     );
   }
 }
 
-export default SignUp;
+const mapStateToProps = (state) => ({
+  errors: state.UI.errorsSignUp,
+  loading: state.UI.loadingSignUp,
+});
+
+SignUp.propTypes = {
+  errors: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired,
+  createAccount: PropTypes.func.isRequired,
+};
+
+export default connect(mapStateToProps, { createAccount })(SignUp);

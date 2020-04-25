@@ -1,8 +1,15 @@
 import React from "react";
 import styled from "styled-components";
-import HomeLink from "components/NavigationsLinks/HomeLink";
-import Logo from "components/atoms/Logo";
 import theme from "utils/theme";
+import PropTypes from "prop-types";
+import { NavLink } from "react-router-dom";
+
+// COMPONENTS
+import Logo from "components/atoms/Logo";
+import HomeLink from "components/NavigationsLinks/HomeLink";
+
+// REDUX STUFF
+import { connect } from "react-redux";
 
 const StyledWrapper = styled.nav`
   width: 100%;
@@ -19,11 +26,28 @@ const StyledWrapper = styled.nav`
   margin-bottom: 50px;
 `;
 
-const Navbar = ({ toogleUserProfile }) => (
+const Navbar = ({ toogleUserProfile, auth }) => (
   <StyledWrapper>
-    <HomeLink toogleUserProfile={toogleUserProfile} />
-    <Logo>LOGO</Logo>
+    {auth ? (
+      <>
+        <HomeLink toogleUserProfile={toogleUserProfile} />
+        <Logo>LOGO</Logo>
+      </>
+    ) : (
+      <>
+        <NavLink to="/login">Login</NavLink>
+        <NavLink to="/signup">Sign up</NavLink>
+      </>
+    )}
   </StyledWrapper>
 );
 
-export default Navbar;
+Navbar.propTypes = {
+  auth: PropTypes.bool.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  auth: state.user.auth,
+});
+
+export default connect(mapStateToProps)(Navbar);

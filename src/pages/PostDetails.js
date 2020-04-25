@@ -1,10 +1,17 @@
 import React from "react";
 import styled from "styled-components";
-import BackButton from "components/atoms/BackButton";
 import theme from "utils/theme";
+import { Link, Redirect } from "react-router-dom";
+import PropTypes from "prop-types";
+
+// COMPONENTS
+import BackButton from "components/atoms/BackButton";
 import NickName from "components/atoms/NickName";
 import PostItemDetailsView from "components/posts/PostItemDetailsView";
-import { Link } from "react-router-dom";
+
+// REDUX STUFF
+import { connect } from "react-redux";
+
 const post = {
   nickName: "Johhny",
   body:
@@ -38,19 +45,33 @@ class PostDetailsView extends React.Component {
     });
   }
   render() {
+    const { auth } = this.props;
     const { userProfile } = this.state;
     return (
       <StyledWrapper>
-        <StyledHeader>
-          <Link to={userProfile}>
-            <BackButton />
-          </Link>
-          <StyledNickName>Post</StyledNickName>
-        </StyledHeader>
-        <PostItemDetailsView post={post} />
+        {!auth ? (
+          <Redirect to="/login" />
+        ) : (
+          <>
+            <StyledHeader>
+              <Link to={userProfile}>
+                <BackButton />
+              </Link>
+              <StyledNickName>Post</StyledNickName>
+            </StyledHeader>
+            <PostItemDetailsView post={post} />
+          </>
+        )}
       </StyledWrapper>
     );
   }
 }
+const mapStateToProps = (state) => ({
+  auth: state.user.auth,
+});
 
-export default PostDetailsView;
+PostDetailsView.propTypes = {
+  auth: PropTypes.bool.isRequired,
+};
+
+export default connect(mapStateToProps)(PostDetailsView);
