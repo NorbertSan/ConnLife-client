@@ -25,6 +25,8 @@ import {
   CLEAR_LOADING_REMOVE_POST,
   REMOVE_POST,
   REMOVE_COMMENT,
+  LOADING_REMOVE_COMMENT,
+  CLEAR_LOADING_REMOVE_COMMENT,
 } from "redux/types";
 import axios from "axios";
 
@@ -151,6 +153,7 @@ export const unlike = (post_id) => (dispatch) => {
 export const removePost = (post_id) => (dispatch) => {
   console.log("removePost action fired");
   dispatch({ type: LOADING_REMOVE_POST });
+  console.log(post_id);
   axios
     .delete(`/post/${post_id}`)
     .then((res) => {
@@ -165,12 +168,16 @@ export const removePost = (post_id) => (dispatch) => {
 
 export const removeComment = (comment_id) => (dispatch) => {
   console.log("remove comment action fired");
+  dispatch({ type: LOADING_REMOVE_COMMENT });
+  console.log(comment_id);
   axios
     .delete(`/comment/${comment_id}`)
     .then((res) => {
       dispatch({ type: REMOVE_COMMENT, payload: res.data.comment_id });
+      dispatch({ type: CLEAR_LOADING_REMOVE_COMMENT });
     })
     .catch((err) => {
-      console.error(err);
+      console.error(err.response);
+      dispatch({ type: CLEAR_LOADING_REMOVE_COMMENT });
     });
 };

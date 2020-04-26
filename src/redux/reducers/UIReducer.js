@@ -31,6 +31,8 @@ import {
   CLEAR_SET_ERRORS_UPDATE_PROFILE,
   LOADING_UPDATE_PROFILE,
   CLEAR_LOADING_UPDATE_PROFILE,
+  LOADING_REMOVE_COMMENT,
+  CLEAR_LOADING_REMOVE_COMMENT,
 } from "redux/types";
 const initialState = {
   loadingLogin: false,
@@ -50,6 +52,7 @@ const initialState = {
   loadingRemovePost: false,
   errorsUpdateProfile: {},
   loadingUpdateProfile: false,
+  loadingRemoveComment: false,
 };
 
 export default (state = initialState, action) => {
@@ -217,6 +220,16 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loadingUpdateProfile: false,
+      };
+    case LOADING_REMOVE_COMMENT:
+      return {
+        ...state,
+        loadingRemoveComment: true,
+      };
+    case CLEAR_LOADING_REMOVE_COMMENT:
+      return {
+        ...state,
+        loadingRemoveComment: false,
       };
     default:
       return { ...state };

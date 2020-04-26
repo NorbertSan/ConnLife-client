@@ -8,6 +8,7 @@ import {
   REMOVE_LIKE,
   REMOVE_POST,
   UPDATE_USER_PROFILE,
+  REMOVE_COMMENT,
 } from "redux/types";
 const initialState = {
   posts: [],
@@ -42,7 +43,7 @@ export default (state = initialState, action) => {
         action.payload,
         ...state.singlePost.comments,
       ];
-      const oldCommentsCount = state.singlePost.postDetails.commentsCount;
+      let oldCommentsCount = state.singlePost.postDetails.commentsCount;
       let postDetails = {
         ...state.singlePost.postDetails,
         commentsCount: oldCommentsCount + 1,
@@ -112,6 +113,19 @@ export default (state = initialState, action) => {
         website: action.payload.website,
         bio: action.payload.bio,
       };
+      return {
+        ...state,
+      };
+    case REMOVE_COMMENT:
+      state.singlePost.comments = [...state.singlePost.comments].filter(
+        (item) => item.comment_id !== parseInt(action.payload)
+      );
+      let commentsCounter = state.singlePost.postDetails.commentsCount;
+      state.singlePost.postDetails = {
+        ...state.singlePost.postDetails,
+        commentsCount: commentsCounter - 1,
+      };
+
       return {
         ...state,
       };

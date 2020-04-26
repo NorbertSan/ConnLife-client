@@ -67,17 +67,10 @@ class RemovePost extends React.Component {
   state = {
     dialogOpen: false,
   };
-  openDialog = () => {
-    console.log("open");
-    this.setState({ dialogOpen: true });
-  };
-  closeDialog = () => {
-    this.setState({ dialogOpen: false });
-  };
+  openDialog = () => this.setState({ dialogOpen: true });
+  closeDialog = () => this.setState({ dialogOpen: false });
+  handleRemovePost = () => this.props.removePost(this.props.post_id);
 
-  handleRemovePost = () => {
-    this.props.removePost(this.props.post_id);
-  };
   render() {
     const dialogOpen = this.state.dialogOpen;
     const { loading } = this.props;

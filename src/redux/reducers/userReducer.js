@@ -7,6 +7,8 @@ import {
   REMOVE_LIKE,
   REMOVE_POST,
   UPDATE_USER_PROFILE,
+  REMOVE_COMMENT,
+  ADD_COMMENT,
 } from "redux/types";
 const initialState = {
   auth: false,
@@ -14,6 +16,7 @@ const initialState = {
   posts: [],
   likes: [],
   notifications: [],
+  comments: [],
 };
 
 export default (state = initialState, action) => {
@@ -64,6 +67,18 @@ export default (state = initialState, action) => {
       };
       return {
         ...state,
+      };
+    case REMOVE_COMMENT:
+      state.comments = [...state.comments].filter(
+        (item) => item.comment_id !== parseInt(action.payload)
+      );
+      return {
+        ...state,
+      };
+    case ADD_COMMENT:
+      return {
+        ...state,
+        comments: [action.payload, ...state.comments],
       };
     default:
       return { ...state };
