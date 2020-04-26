@@ -11,6 +11,9 @@ const Textarea = styled.textarea`
   &::placeholder {
     color: grey;
   }
+  &:focus {
+    border-color: ${theme.colors.primary};
+  }
 `;
 
 export default Textarea;

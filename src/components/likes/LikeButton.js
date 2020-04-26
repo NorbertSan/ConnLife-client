@@ -1,7 +1,14 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import LikeIcon from "assets/icons/like.svg";
 import theme from "utils/theme";
+import PropTypes from "prop-types";
+
+import LikeIcon from "assets/icons/like.svg";
+import NoLikeIcon from "assets/icons/noLike.svg";
+
+// REDUX STUFF
+import { connect } from "react-redux";
+import { like, unlike } from "redux/actions/dataActions";
 
 const StyledButton = styled.button`
   background: none;
@@ -15,28 +22,6 @@ const StyledButton = styled.button`
     color: ${theme.colors.primary};
   }
   cursor: pointer;
-  &:after {
-    content: "Like";
-    position: absolute;
-    background: ${theme.colors.primary};
-    color: ${theme.colors.tertiary};
-    font-weight: ${theme.fontWeight.bold};
-    width: 43px;
-    height: 17px;
-    border-radius: 10px;
-    z-index: 9;
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.15s ease-in-out;
-  }
-  &:hover:after {
-    opacity: 1;
-  }
 `;
 const StyledImage = styled.img`
   width: 15px;
@@ -50,11 +35,42 @@ const StyledImage = styled.img`
     `}
 `;
 
-const LikeButton = ({ likesCount, big }) => (
-  <StyledButton>
-    <StyledImage big={big} src={LikeIcon} />
-    <span>{likesCount}</span>
-  </StyledButton>
-);
+const LikeButton = ({ likesCount, big, post_id, like, unlike, likedPosts }) => {
+  const handleClick = (e) => {
+    // TODO 1) check if logged user already like this post
+    e.preventDefault();
+    if (likedPosts.filter((item) => item.post_id === post_id).length === 0) {
+      // like
+      like(post_id);
+    } else {
+      // unlike
+      unlike(post_id);
+    }
+  };
+  return (
+    <StyledButton onClick={handleClick}>
+      <StyledImage
+        big={big}
+        src={
+          likedPosts.filter((item) => item.post_id === post_id).length === 0
+            ? NoLikeIcon
+            : LikeIcon
+        }
+      />
+      <span>{likesCount}</span>
+    </StyledButton>
+  );
+};
 
-export default LikeButton;
+LikeButton.propTypes = {
+  like: PropTypes.func.isRequired,
+  unlike: PropTypes.func.isRequired,
+  likedPosts: PropTypes.array.isRequired,
+  post_id: PropTypes.number.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  likedPosts: state.user.likes,
+});
+
+export default connect(mapStateToProps, { like, unlike })(LikeButton);

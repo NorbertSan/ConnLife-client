@@ -1,5 +1,5 @@
 import {
-  SET_USER,
+  SET_LOGGED_USER,
   SET_ERRORS_LOGIN,
   CLEAR_ERRORS_LOGIN,
   LOADING_UI_LOGIN,
@@ -9,12 +9,17 @@ import {
   SET_ERRORS_SIGNUP,
   CLEAR_ERRORS_SIGNUP,
   SET_SUCCESS_ALERT,
-  SET_AUTHENTICATED,
   SET_UNAUTHENTICATED,
+  UPDATE_USER_PROFILE,
+  LOADING_UPDATE_PROFILE,
+  CLEAR_LOADING_UPDATE_PROFILE,
+  SET_ERRORS_UPDATE_PROFILE,
+  CLEAR_SET_ERRORS_UPDATE_PROFILE,
 } from "redux/types";
 import axios from "axios";
 
 export const loginUser = (credentials, history) => (dispatch) => {
+  console.log("loginuser action fired");
   dispatch({ type: LOADING_UI_LOGIN });
   dispatch({ type: CLEAR_ERRORS_LOGIN });
   axios
@@ -23,8 +28,7 @@ export const loginUser = (credentials, history) => (dispatch) => {
       dispatch({ type: CLEAR_LOADING_UI_LOGIN });
       console.log("login success");
       setAuthorizationToken(res.data.accessToken);
-      dispatch(getUserData());
-      dispatch({ type: CLEAR_ERRORS_LOGIN });
+      dispatch(getLoggedUserData());
       history.push("/");
     })
     .catch((err) => {
@@ -61,6 +65,7 @@ export const createAccount = (data, history) => (dispatch) => {
 };
 
 export const logoutUser = () => (dispatch) => {
+  console.log("logoutuser action fired");
   localStorage.removeItem("AuthToken");
   delete axios.defaults.headers.common["Authorization"];
   dispatch({
@@ -68,15 +73,32 @@ export const logoutUser = () => (dispatch) => {
   });
 };
 
-export const getUserData = () => (dispatch) => {
-  console.log("getUserData action fired");
+export const getLoggedUserData = () => (dispatch) => {
+  console.log("getLoggedUserData action fired");
   axios
     .get("/user")
     .then((res) => {
-      dispatch({ type: SET_USER, payload: res.data });
+      dispatch({ type: SET_LOGGED_USER, payload: res.data });
     })
     .catch((err) => {
       console.error(err);
+    });
+};
+
+export const updateProfile = (data) => (dispatch) => {
+  console.log("update profile action fired");
+  dispatch({ type: CLEAR_SET_ERRORS_UPDATE_PROFILE });
+  dispatch({ type: LOADING_UPDATE_PROFILE });
+  axios
+    .put("/user", data)
+    .then(() => {
+      dispatch({ type: CLEAR_LOADING_UPDATE_PROFILE });
+      dispatch({ type: UPDATE_USER_PROFILE, payload: data });
+    })
+    .catch((err) => {
+      console.error(err);
+      dispatch({ type: SET_ERRORS_UPDATE_PROFILE, payload: err.response.data });
+      dispatch({ type: CLEAR_LOADING_UPDATE_PROFILE });
     });
 };
 

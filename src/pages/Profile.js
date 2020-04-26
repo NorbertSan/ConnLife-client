@@ -11,16 +11,19 @@ import UserInfo from "components/LoggedUserProfile/UserInfo";
 import Button from "components/atoms/Button";
 import UpdateProfile from "components/profile/UpdateProfile";
 import UserBar from "components/profile/UserBar";
+import Alert404 from "components/atoms/Alert404";
+import UserProfileSkeleton from "components/loaders/UserProfileSkeleton";
 
 // REDUX STUFF
 import { connect } from "react-redux";
+import { getUserData } from "redux/actions/dataActions";
 
 const StyledWrapper = styled.div`
   position: relative;
   ${({ isUpdateProfileOpen }) =>
     isUpdateProfileOpen &&
     css`
-      opacity: 0.3;
+      opacity: 0.1;
       pointer-events: none;
     `}
 `;
@@ -41,50 +44,70 @@ const StyledNickName = styled(NickName)`
   margin-bottom: 0;
 `;
 const StyledRectangle = styled.div`
-  margin-top: 13px;
   height: 130px;
   background: ${theme.colors.primary};
+  position: relative;
+  top: 30px;
+  z-index: -1;
 `;
 const StyledButton = styled(Button)`
-  margin-left: auto;
-  margin-right: 30px;
-  position: relative;
-  top: -30px;
+  margin: 25px 15px 15px auto;
 `;
+
 class ProfileView extends React.Component {
   state = {
     isUpdateProfileOpen: false,
   };
+  componentDidMount() {
+    const nickNameParam = this.props.match.params.nickName;
+    this.props.getUserData(nickNameParam);
+  }
   openUpdateProfile = () => this.setState({ isUpdateProfileOpen: true });
   closeUpdateProfile = () => this.setState({ isUpdateProfileOpen: false });
   render() {
     const { isUpdateProfileOpen } = this.state;
-    const { auth } = this.props;
+    const {
+      auth,
+      userInfo,
+      posts,
+      loggedUserNickName,
+      loading,
+      userNotFound,
+    } = this.props;
     return (
       <>
         {!auth ? (
           <Redirect to="/login" />
         ) : (
           <>
-            <UpdateProfile
-              closeProfile={this.closeUpdateProfile}
-              isOpen={isUpdateProfileOpen}
-            />
-            <StyledWrapper isUpdateProfileOpen={isUpdateProfileOpen}>
-              <StyledBackLink to="/">
-                <BackButton />
-              </StyledBackLink>
-              <StyledHeader>
-                <StyledNickName>norbasss</StyledNickName>
-                <span>3 Posts</span>
-              </StyledHeader>
-              <StyledRectangle />
-              <UserInfo moreInfo />
-              <StyledButton secondary onClick={this.openUpdateProfile}>
-                Set up profile
-              </StyledButton>
-              <UserBar />
-            </StyledWrapper>
+            {userNotFound ? (
+              <Alert404 text="Something went wrong, user not found" />
+            ) : loading ? (
+              <UserProfileSkeleton />
+            ) : (
+              <>
+                {isUpdateProfileOpen && (
+                  <UpdateProfile closeProfile={this.closeUpdateProfile} />
+                )}
+                <StyledWrapper isUpdateProfileOpen={isUpdateProfileOpen}>
+                  <StyledBackLink to="/">
+                    <BackButton />
+                  </StyledBackLink>
+                  <StyledHeader>
+                    <StyledNickName>{userInfo.nickName}</StyledNickName>
+                    <span>{posts.length} Posts</span>
+                  </StyledHeader>
+                  <StyledRectangle />
+                  <UserInfo />
+                  {loggedUserNickName === userInfo.nickName && (
+                    <StyledButton secondary onClick={this.openUpdateProfile}>
+                      Set up profile
+                    </StyledButton>
+                  )}
+                  <UserBar posts={posts} />
+                </StyledWrapper>
+              </>
+            )}
           </>
         )}
       </>
@@ -94,10 +117,21 @@ class ProfileView extends React.Component {
 
 const mapStateToProps = (state) => ({
   auth: state.user.auth,
+  userInfo: state.data.userInfo,
+  loggedUserNickName: state.user.userInfo.nickName,
+  posts: state.data.posts,
+  userNotFound: state.UI.userNotFound,
+  loading: state.UI.loadingUser,
 });
 
 ProfileView.propTypes = {
   auth: PropTypes.bool.isRequired,
+  userInfo: PropTypes.object.isRequired,
+  getUserData: PropTypes.func.isRequired,
+  loggedUserNickName: PropTypes.string,
+  posts: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
+  userNotFound: PropTypes.bool.isRequired,
 };
 
-export default connect(mapStateToProps)(ProfileView);
+export default connect(mapStateToProps, { getUserData })(ProfileView);

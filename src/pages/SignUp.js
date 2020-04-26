@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import theme from "utils/theme";
+import { Redirect } from "react-router-dom";
 
 // COMPONENTS
 import Loader from "react-loader-spinner";
@@ -66,86 +67,94 @@ class SignUp extends React.Component {
       confirmPassword,
       nickName,
     } = this.state;
-    const { errors, loading } = this.props;
+    const { errors, loading, auth } = this.props;
     return (
       <>
         <Navbar />
-        <StyledWrapper autoComplete="off" onSubmit={this.handleSubmit}>
-          <StyledHeading>Sign up</StyledHeading>
-          <StyledInputField>
-            <label>Email:</label>
-            <Input value={email} id="email" onChange={this.handleInputChange} />
-            {errors.email && (
-              <StyledValidateError>{errors.email}</StyledValidateError>
-            )}
-          </StyledInputField>
-          <StyledInputField>
-            <label>First name:</label>
-            <Input
-              value={firstName}
-              id="firstName"
-              onChange={this.handleInputChange}
-            />
-            {errors.firstName && (
-              <StyledValidateError>{errors.firstName}</StyledValidateError>
-            )}
-          </StyledInputField>
-          <StyledInputField>
-            <label>Last name:</label>
-            <Input
-              value={lastName}
-              id="lastName"
-              onChange={this.handleInputChange}
-            />
-            {errors.lastName && (
-              <StyledValidateError>{errors.lastName}</StyledValidateError>
-            )}
-          </StyledInputField>
-          <StyledInputField>
-            <label>Password:</label>
-            <Input
-              type="password"
-              value={password}
-              id="password"
-              onChange={this.handleInputChange}
-            />
-            {errors.password && (
-              <StyledValidateError>{errors.password}</StyledValidateError>
-            )}
-          </StyledInputField>
-          <StyledInputField>
-            <label>Confirm password:</label>
-            <Input
-              type="password"
-              value={confirmPassword}
-              id="confirmPassword"
-              onChange={this.handleInputChange}
-            />
-          </StyledInputField>
-          <StyledInputField>
-            <label>Nick name:</label>
-            <Input
-              value={nickName}
-              id="nickName"
-              onChange={this.handleInputChange}
-            />
-            {errors.nickName && (
-              <StyledValidateError>{errors.nickName}</StyledValidateError>
-            )}
-          </StyledInputField>
-          <StyledButton secondary>
-            {loading ? (
-              <Loader
-                type="Oval"
-                color={theme.colors.primary}
-                height={30}
-                width={30}
+        {auth ? (
+          <Redirect to="/" />
+        ) : (
+          <StyledWrapper autoComplete="off" onSubmit={this.handleSubmit}>
+            <StyledHeading>Sign up</StyledHeading>
+            <StyledInputField>
+              <label>Email:</label>
+              <Input
+                value={email}
+                id="email"
+                onChange={this.handleInputChange}
               />
-            ) : (
-              "Create account"
-            )}
-          </StyledButton>
-        </StyledWrapper>
+              {errors.email && (
+                <StyledValidateError>{errors.email}</StyledValidateError>
+              )}
+            </StyledInputField>
+            <StyledInputField>
+              <label>First name:</label>
+              <Input
+                value={firstName}
+                id="firstName"
+                onChange={this.handleInputChange}
+              />
+              {errors.firstName && (
+                <StyledValidateError>{errors.firstName}</StyledValidateError>
+              )}
+            </StyledInputField>
+            <StyledInputField>
+              <label>Last name:</label>
+              <Input
+                value={lastName}
+                id="lastName"
+                onChange={this.handleInputChange}
+              />
+              {errors.lastName && (
+                <StyledValidateError>{errors.lastName}</StyledValidateError>
+              )}
+            </StyledInputField>
+            <StyledInputField>
+              <label>Password:</label>
+              <Input
+                type="password"
+                value={password}
+                id="password"
+                onChange={this.handleInputChange}
+              />
+              {errors.password && (
+                <StyledValidateError>{errors.password}</StyledValidateError>
+              )}
+            </StyledInputField>
+            <StyledInputField>
+              <label>Confirm password:</label>
+              <Input
+                type="password"
+                value={confirmPassword}
+                id="confirmPassword"
+                onChange={this.handleInputChange}
+              />
+            </StyledInputField>
+            <StyledInputField>
+              <label>Nick name:</label>
+              <Input
+                value={nickName}
+                id="nickName"
+                onChange={this.handleInputChange}
+              />
+              {errors.nickName && (
+                <StyledValidateError>{errors.nickName}</StyledValidateError>
+              )}
+            </StyledInputField>
+            <StyledButton secondary>
+              {loading ? (
+                <Loader
+                  type="Oval"
+                  color={theme.colors.primary}
+                  height={30}
+                  width={30}
+                />
+              ) : (
+                "Create account"
+              )}
+            </StyledButton>
+          </StyledWrapper>
+        )}
       </>
     );
   }
@@ -154,12 +163,14 @@ class SignUp extends React.Component {
 const mapStateToProps = (state) => ({
   errors: state.UI.errorsSignUp,
   loading: state.UI.loadingSignUp,
+  auth: state.user.auth,
 });
 
 SignUp.propTypes = {
   errors: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   createAccount: PropTypes.func.isRequired,
+  auth: PropTypes.bool.isRequired,
 };
 
 export default connect(mapStateToProps, { createAccount })(SignUp);

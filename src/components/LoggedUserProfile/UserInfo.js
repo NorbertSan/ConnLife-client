@@ -1,12 +1,21 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import theme from "utils/theme";
-import noFaceIcon from "assets/images/no-face.png";
+import moment from "moment";
+import PropTypes from "prop-types";
+
+// COMPONENTS
 import UserIcon from "components/atoms/UserIcon";
-import CalendarIcon from "assets/icons/calendar.svg";
-import WebsiteIcon from "assets/icons/website.svg";
 import Icon from "components/atoms/Icon";
 import NickName from "components/atoms/NickName";
+
+//ICONS / IMAGES
+import noFaceIcon from "assets/images/no-face.png";
+import CalendarIcon from "assets/icons/calendar.svg";
+import WebsiteIcon from "assets/icons/website.svg";
+
+// REDUX STUFF
+import { connect } from "react-redux";
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -22,13 +31,7 @@ const StyledName = styled.h3`
   margin-bottom: 0;
 `;
 const StyledUserIcon = styled(UserIcon)`
-  ${({ moreInfo }) =>
-    moreInfo &&
-    css`
-      width: 80px;
-      height: 80px;
-      border: 2px solid ${theme.colors.tertiary};
-    `}
+  border: 2px solid ${theme.colors.tertiary};
 `;
 const StyledExtraInfo = styled.div`
   margin-top: 15px;
@@ -39,29 +42,45 @@ const StyledExtraInfo = styled.div`
   }
 `;
 
-const UserInfo = ({ moreInfo }) => (
-  <StyledWrapper moreInfo={moreInfo}>
-    <StyledUserIcon moreInfo={moreInfo} src={noFaceIcon} />
-    <StyledName>Norbert Sańpruch</StyledName>
-    <NickName small>@norbasss</NickName>
-    {moreInfo && (
-      <>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam,
-          quibusdam libero explicabo dolorem error illo laudantium similique
-          neque reiciendis labore enim blanditiis sint fuga at in distinctio
-        </p>
-        <StyledExtraInfo>
-          <Icon src={CalendarIcon} />
-          <span>Joined 26.03.2020</span>
-        </StyledExtraInfo>
+const UserInfo = ({ userInfo, loggedUserInfo }) => {
+  let userInfoToDisplay;
+  if (loggedUserInfo) userInfoToDisplay = { ...loggedUserInfo };
+  else userInfoToDisplay = { ...userInfo };
+  return (
+    <StyledWrapper>
+      <StyledUserIcon big src={noFaceIcon} />
+      <StyledName>{`${userInfoToDisplay.firstName} ${userInfoToDisplay.lastName}`}</StyledName>
+      <NickName small>@{userInfoToDisplay.nickName}</NickName>
+      {userInfoToDisplay.bio && <p>{userInfoToDisplay.bio}</p>}
+      <StyledExtraInfo>
+        <Icon src={CalendarIcon} />
+        <span>Joined {moment(userInfoToDisplay.createdAt).fromNow()}</span>
+      </StyledExtraInfo>
+      {userInfoToDisplay.website && (
         <StyledExtraInfo>
           <Icon src={WebsiteIcon} />
-          <span>http://google.com</span>
+          <span>
+            <a
+              href={`http://${userInfoToDisplay.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {userInfoToDisplay.website}
+            </a>
+          </span>
         </StyledExtraInfo>
-      </>
-    )}
-  </StyledWrapper>
-);
+      )}
+    </StyledWrapper>
+  );
+};
 
-export default UserInfo;
+const mapStateToProps = (state) => ({
+  userInfo: state.data.userInfo,
+});
+
+UserInfo.propTypes = {
+  userInfo: PropTypes.object.isRequired,
+  loggedUserInfo: PropTypes.object,
+};
+
+export default connect(mapStateToProps)(UserInfo);

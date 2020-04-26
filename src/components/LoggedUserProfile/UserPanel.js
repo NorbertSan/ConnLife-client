@@ -1,10 +1,16 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import theme from "utils/theme";
+
+// COMPONENTS
 import NotificationIcon from "assets/icons/notification.svg";
 import UserIcon from "assets/icons/user.svg";
 import Icon from "components/atoms/Icon";
-import theme from "utils/theme";
+
+// REDUX STUFF
+import { connect } from "react-redux";
 
 const StyledWrapper = styled.div`
   margin-top: 30px;
@@ -17,9 +23,9 @@ const StyledLink = styled(Link)`
   font-size: ${theme.fontSize.s};
 `;
 
-const UserPanel = () => (
+const UserPanel = ({ nickName }) => (
   <StyledWrapper>
-    <StyledLink to="/user/sanpruch">
+    <StyledLink to={`/user/${nickName}`}>
       <Icon src={UserIcon} />
       <span>Profile</span>
     </StyledLink>
@@ -30,4 +36,12 @@ const UserPanel = () => (
   </StyledWrapper>
 );
 
-export default UserPanel;
+const mapStateToProps = (state) => ({
+  nickName: state.user.userInfo.nickName,
+});
+
+UserPanel.propTypes = {
+  nickName: PropTypes.string,
+};
+
+export default connect(mapStateToProps)(UserPanel);

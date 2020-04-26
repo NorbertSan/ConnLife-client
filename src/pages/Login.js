@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import theme from "utils/theme";
+import { Redirect } from "react-router-dom";
 
 // COMPONENTS
 import Loader from "react-loader-spinner";
@@ -65,50 +66,56 @@ class Login extends React.Component {
   };
   render() {
     const { email, password } = this.state;
-    const { errors, loading, successAlert } = this.props;
+    const { errors, loading, successAlert, auth } = this.props;
     return (
       <>
-        <Navbar />
-        {successAlert.general && (
-          <SuccessAlert>{successAlert.general}</SuccessAlert>
-        )}
-        <StyledWrapper autoComplete="off" onSubmit={this.handleSubmit}>
-          <StyledHeading>Sign in</StyledHeading>
-          <StyledInputField>
-            <label>Email:</label>
-            <Input
-              secondary
-              value={email}
-              id="email"
-              onChange={this.handleInputChange}
-            />
-          </StyledInputField>
-          <StyledInputField>
-            <label>Password:</label>
-            <Input
-              secondary
-              type="password"
-              id="password"
-              value={password}
-              onChange={this.handleInputChange}
-            />
-          </StyledInputField>
-          <StyledButton secondary>
-            {loading ? (
-              <Loader
-                type="Oval"
-                color={theme.colors.primary}
-                height={30}
-                width={30}
-              />
-            ) : (
-              "login"
+        {auth ? (
+          <Redirect to="/" />
+        ) : (
+          <>
+            <Navbar />
+            {successAlert.general && (
+              <SuccessAlert>{successAlert.general}</SuccessAlert>
             )}
-          </StyledButton>
-          {errors.general && (
-            <StyledValidateError>{errors.general}</StyledValidateError>
-          )}
-        </StyledWrapper>
+            <StyledWrapper autoComplete="off" onSubmit={this.handleSubmit}>
+              <StyledHeading>Sign in</StyledHeading>
+              <StyledInputField>
+                <label>Email:</label>
+                <Input
+                  secondary
+                  value={email}
+                  id="email"
+                  onChange={this.handleInputChange}
+                />
+              </StyledInputField>
+              <StyledInputField>
+                <label>Password:</label>
+                <Input
+                  secondary
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={this.handleInputChange}
+                />
+              </StyledInputField>
+              <StyledButton secondary>
+                {loading ? (
+                  <Loader
+                    type="Oval"
+                    color={theme.colors.primary}
+                    height={30}
+                    width={30}
+                  />
+                ) : (
+                  "login"
+                )}
+              </StyledButton>
+              {errors.general && (
+                <StyledValidateError>{errors.general}</StyledValidateError>
+              )}
+            </StyledWrapper>
+          </>
+        )}
       </>
     );
   }
@@ -118,6 +125,7 @@ const mapStateToProps = (state) => ({
   errors: state.UI.errorsLogin,
   successAlert: state.UI.successAlert,
   loading: state.UI.loadingLogin,
+  auth: state.user.auth,
 });
 
 Login.propTypes = {
@@ -125,6 +133,7 @@ Login.propTypes = {
   loading: PropTypes.bool.isRequired,
   loginUser: PropTypes.func.isRequired,
   successAlert: PropTypes.object.isRequired,
+  auth: PropTypes.bool.isRequired,
 };
 
 export default connect(mapStateToProps, { loginUser })(Login);

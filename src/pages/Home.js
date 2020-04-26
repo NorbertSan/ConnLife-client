@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
 import { Redirect } from "react-router-dom";
 
@@ -16,6 +16,12 @@ const StyledWrapper = styled.section`
   display: flex;
   flex-direction: column;
   padding: 10px;
+  transition: opacity 0.3s ease-in-out;
+  ${({ blurEffect }) =>
+    blurEffect &&
+    css`
+      opacity: 0.1;
+    `}
 `;
 
 class HomeView extends React.Component {
@@ -37,11 +43,11 @@ class HomeView extends React.Component {
         ) : (
           <>
             <Navbar toogleUserProfile={this.toogleUserProfile} />
-            <StyledWrapper>
-              <LoggedUserProfile
-                toogleUserProfile={this.toogleUserProfile}
-                isOpen={isUserProfileOpen}
-              />
+            <LoggedUserProfile
+              toogleUserProfile={this.toogleUserProfile}
+              isOpen={isUserProfileOpen}
+            />
+            <StyledWrapper blurEffect={isUserProfileOpen}>
               <AddPost />
               <PostsList />
             </StyledWrapper>

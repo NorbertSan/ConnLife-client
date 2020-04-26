@@ -1,16 +1,22 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import theme from "utils/theme";
+import PropTypes from "prop-types";
+
+// COMPONENTS
 import UserInfo from "./UserInfo";
 import UserPanel from "./UserPanel";
 import XButton from "components/atoms/XButton";
 import LogoutButton from "./LogoutButton";
 
+// REDUX
+import { connect } from "react-redux";
+
 const StyledWrapper = styled.section`
   width: 70%;
   display: flex;
   flex-direction: column;
-  position: absolute;
+  position: fixed;
   left: 0%;
   transform: translateX(-100%);
   top: 10vh;
@@ -32,16 +38,26 @@ const StyledHeader = styled.div`
   border-bottom: 1px solid ${theme.colors.secondary};
 `;
 
-const LoggedUserProfile = ({ isOpen, toogleUserProfile }) => (
+const LoggedUserProfile = ({ isOpen, toogleUserProfile, loggedUserInfo }) => (
   <StyledWrapper isOpen={isOpen}>
     <XButton type="none" onClick={toogleUserProfile}>
       X
     </XButton>
     <StyledHeader>Account Info</StyledHeader>
-    <UserInfo />
+    <UserInfo loggedUserInfo={loggedUserInfo} />
     <UserPanel />
     <LogoutButton />
   </StyledWrapper>
 );
 
-export default LoggedUserProfile;
+LoggedUserProfile.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toogleUserProfile: PropTypes.func.isRequired,
+  loggedUserInfo: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  loggedUserInfo: state.user.userInfo,
+});
+
+export default connect(mapStateToProps)(LoggedUserProfile);

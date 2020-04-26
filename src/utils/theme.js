@@ -1,13 +1,10 @@
 const theme = {
   colors: {
-    // primary: "#f79071", //yellowish
-    // secondary: "#faf5e4", // whiteish
-    // tertiary: "#004445", // dark blueish
-    primary: "#3282b8", //yellowish
+    primary: "#3282b8", // blueish
     secondary: "#f4eeff", // whiteish
     tertiary: "#1b262c", // dark blueish
-    quaternary: "#272121",
-    error: "#c70039",
+    quaternary: "#272121", // left home panel
+    error: "#c70039", // redish
   },
   fontSize: {
     xs: "1.0rem",

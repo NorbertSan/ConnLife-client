@@ -1,34 +1,13 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import PostItem from "components/posts/PostItem";
 import theme from "utils/theme";
+import PropTypes from "prop-types";
 
-const posts = [
-  {
-    nickName: "Johhny",
-    body:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Asperiores quod quia ea quam officiis nam",
-    createdAt: new Date(),
-    likesCount: 2,
-    commentsCount: 3,
-  },
-  {
-    nickName: "Johhny",
-    body:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Asperiores quod quia ea quam officiis nam",
-    createdAt: new Date(),
-    likesCount: 2,
-    commentsCount: 3,
-  },
-  {
-    nickName: "Johhny",
-    body:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Asperiores quod quia ea quam officiis nam",
-    createdAt: new Date(),
-    likesCount: 2,
-    commentsCount: 3,
-  },
-];
+// COMPONENTS
+import PostItem from "components/posts/PostItem";
+
+// REDUX STUFF
+import { connect } from "react-redux";
 
 const StyledWrapper = styled.ul`
   margin: 0;
@@ -64,6 +43,10 @@ const StyledPostsWrapper = styled.div`
   flex-direction: column;
   padding: 0 10px;
 `;
+const StyledAlert = styled.h3`
+  text-align: center;
+  margin-top: 40px;
+`;
 
 class UserBar extends React.Component {
   state = {
@@ -82,6 +65,7 @@ class UserBar extends React.Component {
     }));
   render() {
     const { isPostsOpen, isLikesOpen } = this.state;
+    const { posts, nickName, loggedUserNickName } = this.props;
     return (
       <>
         <StyledWrapper>
@@ -94,21 +78,52 @@ class UserBar extends React.Component {
         </StyledWrapper>
         <StyledPostsWrapper>
           {isPostsOpen &&
-            (posts ? (
-              posts.map((post) => <PostItem post={post} />)
+            (posts.length > 0 ? (
+              posts.map((post) => (
+                <PostItem
+                  key={`post:${post.post_id}`}
+                  nickName={nickName}
+                  post={post}
+                />
+              ))
             ) : (
-              <span>You don't own any posts yet</span>
+              <StyledAlert>
+                {" "}
+                {loggedUserNickName === nickName
+                  ? "You don't own any posts yet"
+                  : `User ${nickName} has no posts `}{" "}
+              </StyledAlert>
             ))}
           {isLikesOpen &&
-            (posts ? (
-              posts.map((post) => <PostItem post={post} />)
+            (posts.length > 0 ? (
+              posts.map((post) => (
+                <PostItem
+                  key={`post:${post.post_id}`}
+                  nickName={nickName}
+                  post={post}
+                />
+              ))
             ) : (
-              <span>You don't have any liked posts yet</span>
+              <StyledAlert>
+                {loggedUserNickName === nickName
+                  ? "You don't have any liked posts"
+                  : `User ${nickName} has no liked posts `}
+              </StyledAlert>
             ))}
         </StyledPostsWrapper>
       </>
     );
   }
 }
+const mapStateToProps = (state) => ({
+  nickName: state.data.userInfo.nickName,
+  loggedUserNickName: state.user.userInfo.nickName,
+});
 
-export default UserBar;
+UserBar.propTypes = {
+  posts: PropTypes.array.isRequired,
+  nickName: PropTypes.string,
+  loggedUserNickName: PropTypes.string,
+};
+
+export default connect(mapStateToProps)(UserBar);

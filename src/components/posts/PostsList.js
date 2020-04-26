@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 
 // COMPONENTS
 import PostItem from "components/posts/PostItem";
+import PostsSkeleton from "components/loaders/PostsSkeleton";
+import SinglePostSkeleton from "components/loaders/SinglePostSkeleton";
 
 // REDUX STUFF
 import { connect } from "react-redux";
@@ -13,19 +15,33 @@ const StyledWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
+const StyledAlert = styled.h3`
+  text-align: center;
+  margin-top: 40px;
+`;
 
 class PostsList extends React.Component {
   componentDidMount() {
     this.props.getAllPosts();
   }
   render() {
-    const { posts } = this.props;
+    const { posts, loading, loadingAddPost } = this.props;
     return (
       <StyledWrapper>
-        {posts &&
-          posts.map((post) => (
-            <PostItem post={post} key={`post:${post.post_id}`} />
-          ))}
+        {loading ? (
+          <PostsSkeleton />
+        ) : (
+          <>
+            {loadingAddPost && <SinglePostSkeleton />}
+            {posts.length > 0 ? (
+              posts.map((post) => (
+                <PostItem post={post} key={`post:${post.post_id}`} />
+              ))
+            ) : (
+              <StyledAlert>There is no posts</StyledAlert>
+            )}
+          </>
+        )}
       </StyledWrapper>
     );
   }
@@ -33,11 +49,15 @@ class PostsList extends React.Component {
 
 const mapStateToProps = (state) => ({
   posts: state.data.posts,
+  loading: state.UI.loadingPosts,
+  loadingAddPost: state.UI.loadingAddPost,
 });
 
 PostsList.propTypes = {
   posts: PropTypes.array.isRequired,
   getAllPosts: PropTypes.func.isRequired,
+  loadingPosts: PropTypes.bool,
+  loadingAddPost: PropTypes.bool,
 };
 
 export default connect(mapStateToProps, { getAllPosts })(PostsList);

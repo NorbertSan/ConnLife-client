@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 
 // COMPONENTS
-import Logo from "components/atoms/Logo";
 import HomeLink from "components/NavigationsLinks/HomeLink";
 
 // REDUX STUFF
@@ -29,10 +28,7 @@ const StyledWrapper = styled.nav`
 const Navbar = ({ toogleUserProfile, auth }) => (
   <StyledWrapper>
     {auth ? (
-      <>
-        <HomeLink toogleUserProfile={toogleUserProfile} />
-        <Logo>LOGO</Logo>
-      </>
+      <HomeLink toogleUserProfile={toogleUserProfile} />
     ) : (
       <>
         <NavLink to="/login">Login</NavLink>

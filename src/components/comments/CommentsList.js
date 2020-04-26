@@ -1,29 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import CommentItem from "components/comments/CommentItem";
+import PropTypes from "prop-types";
 
-const comments = [
-  {
-    body: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore, exercitationem quas? Impedit eligendi consectetur suscipit consequuntur asperiores accusamus laboriosam soluta cupiditate, nisi vel pariatur odit officia minus atque recusandae porro?`,
-    nickName: "sanpruch",
-    createdAt: new Date(),
-  },
-  {
-    body: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore, exercitationem quas? Impedit eligendi consectetur suscipit consequuntur asperiores accusamus laboriosam soluta cupiditate, nisi vel pariatur odit officia minus atque recusandae porro?`,
-    nickName: "sanpruch",
-    createdAt: new Date(),
-  },
-  {
-    body: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore, exercitationem quas? Impedit eligendi consectetur suscipit consequuntur asperiores accusamus laboriosam soluta cupiditate, nisi vel pariatur odit officia minus atque recusandae porro?`,
-    nickName: "sanpruch",
-    createdAt: new Date(),
-  },
-  {
-    body: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore, exercitationem quas? Impedit eligendi consectetur suscipit consequuntur asperiores accusamus laboriosam soluta cupiditate, nisi vel pariatur odit officia minus atque recusandae porro?`,
-    nickName: "sanpruch",
-    createdAt: new Date(),
-  },
-];
+// COMPONENTS
+import CommentItem from "components/comments/CommentItem";
+import CommentSkeleton from "components/loaders/CommentSkeleton";
+
+// REDUX STUFF
+import { connect } from "react-redux";
 
 const StyledWrapper = styled.ul`
   margin: 0;
@@ -32,14 +16,30 @@ const StyledWrapper = styled.ul`
   display: flex;
   flex-direction: column;
 `;
-const CommentsList = () => (
+const StyledAlert = styled.h4`
+  text-align: center;
+`;
+
+const CommentsList = ({ comments, loading }) => (
   <StyledWrapper>
-    {comments ? (
-      comments.map((comment) => <CommentItem comment={comment} />)
+    {loading && <CommentSkeleton />}
+    {comments.length > 0 ? (
+      comments.map((comment) => (
+        <CommentItem key={`comment:${comment.comment_id}`} comment={comment} />
+      ))
     ) : (
-      <span>Add first comment !</span>
+      <StyledAlert>No comments yet</StyledAlert>
     )}
   </StyledWrapper>
 );
+const mapStateToProps = (state) => ({
+  comments: state.data.singlePost.comments,
+  loading: state.UI.loadingAddComment,
+});
 
-export default CommentsList;
+CommentsList.propTypes = {
+  comments: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
+};
+
+export default connect(mapStateToProps)(CommentsList);

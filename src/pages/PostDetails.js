@@ -8,18 +8,11 @@ import PropTypes from "prop-types";
 import BackButton from "components/atoms/BackButton";
 import NickName from "components/atoms/NickName";
 import PostItemDetailsView from "components/posts/PostItemDetailsView";
+import Alert404 from "components/atoms/Alert404";
 
 // REDUX STUFF
 import { connect } from "react-redux";
-
-const post = {
-  nickName: "Johhny",
-  body:
-    "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Asperiores quod quia ea quam officiis nam",
-  createdAt: new Date(),
-  likesCount: 2,
-  commentsCount: 3,
-};
+import { getSinglePost } from "redux/actions/dataActions";
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -36,42 +29,47 @@ const StyledNickName = styled(NickName)`
 `;
 
 class PostDetailsView extends React.Component {
-  state = {
-    userProfile: "",
-  };
   componentDidMount() {
-    this.setState({
-      userProfile: `/user/${this.props.match.params.nickName}`,
-    });
+    const post_id = this.props.match.params.post_id;
+    this.props.getSinglePost(post_id);
   }
   render() {
-    const { auth } = this.props;
-    const { userProfile } = this.state;
+    const { auth, postNotFound } = this.props;
+    const nickName = this.props.match.params.nickName;
     return (
-      <StyledWrapper>
-        {!auth ? (
-          <Redirect to="/login" />
+      <>
+        {postNotFound ? (
+          <Alert404 text="Something went wrong, post not found" />
         ) : (
-          <>
-            <StyledHeader>
-              <Link to={userProfile}>
-                <BackButton />
-              </Link>
-              <StyledNickName>Post</StyledNickName>
-            </StyledHeader>
-            <PostItemDetailsView post={post} />
-          </>
+          <StyledWrapper>
+            {!auth ? (
+              <Redirect to="/login" />
+            ) : (
+              <>
+                <StyledHeader>
+                  <Link to={`/user/${nickName}`}>
+                    <BackButton />
+                  </Link>
+                  <StyledNickName>Post</StyledNickName>
+                </StyledHeader>
+                <PostItemDetailsView />
+              </>
+            )}
+          </StyledWrapper>
         )}
-      </StyledWrapper>
+      </>
     );
   }
 }
 const mapStateToProps = (state) => ({
   auth: state.user.auth,
+  postNotFound: state.UI.postNotFound,
 });
 
 PostDetailsView.propTypes = {
   auth: PropTypes.bool.isRequired,
+  getSinglePost: PropTypes.func.isRequired,
+  postNotFound: PropTypes.bool.isRequired,
 };
 
-export default connect(mapStateToProps)(PostDetailsView);
+export default connect(mapStateToProps, { getSinglePost })(PostDetailsView);
