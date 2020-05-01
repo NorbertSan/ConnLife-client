@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import theme from "utils/theme";
 import PropTypes from "prop-types";
@@ -68,94 +68,85 @@ const StyledXButton = styled.div`
   right: 15px;
 `;
 
-class UpdateProfile extends React.Component {
-  state = {
-    bio: "",
-    website: "",
-  };
-  componentDidMount() {
-    let { website, bio } = this.props.userInfo;
+const UpdateProfile = ({
+  updateProfile,
+  isOpen,
+  closeProfile,
+  errors,
+  loading,
+  userInfo,
+}) => {
+  const [bio, setBioValue] = useState("");
+  const [website, setWebsiteValue] = useState("");
+  useEffect(() => {
+    let { website, bio } = userInfo;
     if (website === null) website = "";
     if (bio === null) bio = "";
-    this.setState({ bio, website });
-  }
-  handleChangeInput = (e) =>
-    this.setState({
-      [e.target.id]: e.target.value,
-    });
-  handleSubmit = (e) => {
+    setBioValue(bio);
+    setBioValue(website);
+  }, []);
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const { bio, website } = this.state;
     let data = {
       bio,
       website,
     };
     if (website.includes("http")) data.website = website.split("//")[1];
-    this.props.updateProfile(data);
+    updateProfile(data);
   };
-  render() {
-    const { isOpen, closeProfile, errors, loading } = this.props;
-    const { bio, website } = this.state;
-    return (
-      <StyledForm
-        onSubmit={this.handleSubmit}
-        autoComplete="off"
-        isOpen={isOpen}
+  return (
+    <StyledForm onSubmit={handleSubmit} autoComplete="off" isOpen={isOpen}>
+      <StyledXButton
+        onClick={(e) => {
+          e.preventDefault();
+          closeProfile();
+        }}
+        type="none"
       >
-        <StyledXButton
-          onClick={(e) => {
-            e.preventDefault();
-            closeProfile();
-          }}
-          type="none"
-        >
-          X
-        </StyledXButton>
-        <InputFied>
-          <StyledLabel>Biography:</StyledLabel>
-          <Textarea
-            type="text"
-            id="bio"
-            value={bio}
-            onChange={this.handleChangeInput}
-            placeholder="Tell us about yourself"
+        X
+      </StyledXButton>
+      <InputFied>
+        <StyledLabel>Biography:</StyledLabel>
+        <Textarea
+          type="text"
+          value={bio}
+          onChange={(e) => setBioValue(e.target.value)}
+          placeholder="Tell us about yourself"
+        />
+      </InputFied>
+      <InputFied>
+        <StyledLabel>Website:</StyledLabel>
+        <Input
+          type="text"
+          value={website}
+          onChange={(e) => setWebsiteValue(e.target.value)}
+          placeholder="website.com"
+        />
+      </InputFied>
+      <StyledButton secondary type="submit">
+        {loading ? (
+          <Loader
+            type="BallTriangle"
+            color={theme.colors.primary}
+            height={30}
+            width={30}
           />
-        </InputFied>
-        <InputFied>
-          <StyledLabel>Website:</StyledLabel>
-          <Input
-            type="text"
-            id="website"
-            value={website}
-            onChange={this.handleChangeInput}
-            placeholder="website.com"
-          />
-        </InputFied>
-        <StyledButton secondary type="submit">
-          {loading ? (
-            <Loader
-              type="BallTriangle"
-              color={theme.colors.primary}
-              height={30}
-              width={30}
-            />
-          ) : (
-            "Update"
-          )}
-        </StyledButton>
-        {errors.success && (
-          <StyledValidateError>{errors.success}</StyledValidateError>
+        ) : (
+          "Update"
         )}
-        {errors.bio && (
-          <StyledValidateError danger>{errors.bio}</StyledValidateError>
-        )}
-        {errors.website && (
-          <StyledValidateError danger>{errors.website}</StyledValidateError>
-        )}
-      </StyledForm>
-    );
-  }
-}
+      </StyledButton>
+      {errors.success && (
+        <StyledValidateError>{errors.success}</StyledValidateError>
+      )}
+      {errors.bio && (
+        <StyledValidateError danger>{errors.bio}</StyledValidateError>
+      )}
+      {errors.website && (
+        <StyledValidateError danger>{errors.website}</StyledValidateError>
+      )}
+    </StyledForm>
+  );
+};
 
 const mapStateToProps = (state) => ({
   userInfo: state.user.userInfo,

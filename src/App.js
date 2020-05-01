@@ -4,7 +4,7 @@ import { Route, BrowserRouter, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
-
+import AuthRoute from "utils/AuthRoute";
 // REDUX STUFF
 import store from "redux/store";
 import { SET_AUTHENTICATED } from "redux/types";
@@ -38,7 +38,7 @@ const App = () => (
     <BrowserRouter>
       <GlobalStyles />
       <Switch>
-        <Route exact path="/" component={Home} />
+        <AuthRoute exact path="/" component={Home} />
         <Route exact path="/user/:nickName" component={Profile} />
         <Route
           exact

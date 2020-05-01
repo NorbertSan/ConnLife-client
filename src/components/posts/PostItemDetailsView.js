@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import moment from "moment";
 import { Link } from "react-router-dom";
@@ -44,54 +44,47 @@ const StyledAddCommentIcon = styled(Icon)`
   margin-left: auto;
 `;
 
-class PostItemDetailsView extends React.Component {
-  state = {
-    isAddCommentFormOpen: false,
-  };
-  openAddCommentForm = () => this.setState({ isAddCommentFormOpen: true });
-  render() {
-    const { post, loading, userAvatar } = this.props;
-    const { isAddCommentFormOpen } = this.state;
-    return (
-      <StyledWrapper>
-        {loading || !post ? (
-          <PostDetailsSkeleton />
-        ) : (
-          <>
-            <StyledHeader>
-              <Link to={`/user/${post.nickName}`}>
-                <UserIcon big src={avatars[post.avatar]} />
-              </Link>
-              <div>
-                <NickName>
-                  {post.firstName} {post.lastName}
-                </NickName>
-                <span>@{post.nickName}</span>
-              </div>
-            </StyledHeader>
-            <p>{post.body}</p>
-            <CreatedAtInfo>{moment(post.createdAt).toString()}</CreatedAtInfo>
-            <StyledButtonsContainer>
-              <LikeButton
-                big
-                likesCount={post.likesCount}
-                post_id={post.post_id}
-              />
-              <CommentButton big commentsCount={post.commentsCount} />
-              <StyledAddCommentIcon
-                onClick={this.openAddCommentForm}
-                big
-                src={PlusIcon}
-              />
-            </StyledButtonsContainer>
-            {isAddCommentFormOpen && <AddComment />}
-            <CommentsList />
-          </>
-        )}
-      </StyledWrapper>
-    );
-  }
-}
+const PostItemDetailsView = ({ post, loading }) => {
+  const [isAddCommentFormOpen, toggleAddCommentForm] = useState(false);
+  return (
+    <StyledWrapper>
+      {loading || !post ? (
+        <PostDetailsSkeleton />
+      ) : (
+        <>
+          <StyledHeader>
+            <Link to={`/user/${post.nickName}`}>
+              <UserIcon big src={avatars[post.avatar]} />
+            </Link>
+            <div>
+              <NickName>
+                {post.firstName} {post.lastName}
+              </NickName>
+              <span>@{post.nickName}</span>
+            </div>
+          </StyledHeader>
+          <p>{post.body}</p>
+          <CreatedAtInfo>{moment(post.createdAt).toString()}</CreatedAtInfo>
+          <StyledButtonsContainer>
+            <LikeButton
+              big
+              likesCount={post.likesCount}
+              post_id={post.post_id}
+            />
+            <CommentButton big commentsCount={post.commentsCount} />
+            <StyledAddCommentIcon
+              onClick={() => toggleAddCommentForm(true)}
+              big
+              src={PlusIcon}
+            />
+          </StyledButtonsContainer>
+          {isAddCommentFormOpen && <AddComment />}
+          <CommentsList />
+        </>
+      )}
+    </StyledWrapper>
+  );
+};
 
 const mapStateToProps = (state) => ({
   post: state.data.singlePost.postDetails,

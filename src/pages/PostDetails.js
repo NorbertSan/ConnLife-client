@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import theme from "utils/theme";
 import { Link, Redirect } from "react-router-dom";
@@ -28,44 +28,41 @@ const StyledNickName = styled(NickName)`
   margin-left: 100px;
 `;
 
-class PostDetailsView extends React.Component {
-  componentDidMount() {
-    const post_id = this.props.match.params.post_id;
-    this.props.getSinglePost(post_id);
-  }
-  render() {
-    const { auth, postNotFound } = this.props;
-    return (
-      <>
-        {postNotFound ? (
-          <Alert404 text="Something went wrong, post not found" />
-        ) : (
-          <StyledWrapper>
-            {!auth ? (
-              <Redirect to="/login" />
-            ) : (
-              <>
-                <StyledHeader>
-                  <Link
-                    to={
-                      this.props.location.state
-                        ? this.props.location.state.prevPath
-                        : "/"
-                    }
-                  >
-                    <BackButton />
-                  </Link>
-                  <StyledNickName>Post</StyledNickName>
-                </StyledHeader>
-                <PostItemDetailsView />
-              </>
-            )}
-          </StyledWrapper>
-        )}
-      </>
-    );
-  }
-}
+const PostDetailsView = ({
+  auth,
+  postNotFound,
+  match,
+  getSinglePost,
+  location,
+}) => {
+  useEffect(() => {
+    const post_id = match.params.post_id;
+    getSinglePost(post_id);
+  }, [getSinglePost, match]);
+  return (
+    <>
+      {postNotFound ? (
+        <Alert404 text="Something went wrong, post not found" />
+      ) : (
+        <StyledWrapper>
+          {!auth ? (
+            <Redirect to="/login" />
+          ) : (
+            <>
+              <StyledHeader>
+                <Link to={location.state ? location.state.prevPath : "/"}>
+                  <BackButton />
+                </Link>
+                <StyledNickName>Post</StyledNickName>
+              </StyledHeader>
+              <PostItemDetailsView />
+            </>
+          )}
+        </StyledWrapper>
+      )}
+    </>
+  );
+};
 const mapStateToProps = (state) => ({
   auth: state.user.auth,
   postNotFound: state.UI.postNotFound,

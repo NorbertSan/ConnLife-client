@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import theme from "utils/theme";
@@ -44,83 +44,69 @@ const StyledValidateError = styled(ValidateError)`
   margin-top: 20px;
 `;
 
-class Login extends React.Component {
-  state = {
-    email: "",
-    password: "",
-  };
-  handleInputChange = (e) =>
-    this.setState({
-      [e.target.id]: e.target.value,
-    });
-  handleSubmit = (e) => {
+const Login = ({ loginUser, history, errors, loading, successAlert, auth }) => {
+  const [email, setEmailValue] = useState("");
+  const [password, setPasswordValue] = useState("");
+  const handleSubmit = (e) => {
     e.preventDefault();
     const credentials = {
-      email: this.state.email,
-      password: this.state.password,
+      email,
+      password,
     };
-    this.props.loginUser(credentials, this.props.history);
-    this.setState({
-      email: "",
-      password: "",
-    });
+    loginUser(credentials, history);
+    setEmailValue("");
+    setPasswordValue("");
   };
-  render() {
-    const { email, password } = this.state;
-    const { errors, loading, successAlert, auth } = this.props;
-    return (
-      <>
-        {auth ? (
-          <Redirect to="/" />
-        ) : (
-          <>
-            <Navbar />
-            {successAlert.general && (
-              <SuccessAlert>{successAlert.general}</SuccessAlert>
-            )}
-            <StyledWrapper autoComplete="off" onSubmit={this.handleSubmit}>
-              <StyledHeading>Sign in</StyledHeading>
-              <StyledInputField>
-                <label>Email:</label>
-                <Input
-                  secondary
-                  value={email}
-                  id="email"
-                  onChange={this.handleInputChange}
+  return (
+    <>
+      {auth ? (
+        <Redirect to="/" />
+      ) : (
+        <>
+          <Navbar />
+          {successAlert.general && (
+            <SuccessAlert>{successAlert.general}</SuccessAlert>
+          )}
+          <StyledWrapper autoComplete="off" onSubmit={handleSubmit}>
+            <StyledHeading>Sign in</StyledHeading>
+            <StyledInputField>
+              <label>Email:</label>
+              <Input
+                secondary
+                value={email}
+                onChange={(e) => setEmailValue(e.target.value)}
+              />
+            </StyledInputField>
+            <StyledInputField>
+              <label>Password:</label>
+              <Input
+                secondary
+                type="password"
+                value={password}
+                onChange={(e) => setPasswordValue(e.target.value)}
+              />
+            </StyledInputField>
+            <StyledButton secondary>
+              {loading ? (
+                <Loader
+                  type="Oval"
+                  color={theme.colors.primary}
+                  height={30}
+                  width={30}
                 />
-              </StyledInputField>
-              <StyledInputField>
-                <label>Password:</label>
-                <Input
-                  secondary
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={this.handleInputChange}
-                />
-              </StyledInputField>
-              <StyledButton secondary>
-                {loading ? (
-                  <Loader
-                    type="Oval"
-                    color={theme.colors.primary}
-                    height={30}
-                    width={30}
-                  />
-                ) : (
-                  "login"
-                )}
-              </StyledButton>
-              {errors.general && (
-                <StyledValidateError>{errors.general}</StyledValidateError>
+              ) : (
+                "login"
               )}
-            </StyledWrapper>
-          </>
-        )}
-      </>
-    );
-  }
-}
+            </StyledButton>
+            {errors.general && (
+              <StyledValidateError>{errors.general}</StyledValidateError>
+            )}
+          </StyledWrapper>
+        </>
+      )}
+    </>
+  );
+};
 
 const mapStateToProps = (state) => ({
   errors: state.UI.errorsLogin,

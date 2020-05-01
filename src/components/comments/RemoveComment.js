@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import theme from "utils/theme";
 import PropTypes from "prop-types";
@@ -57,50 +57,42 @@ const StyledButtonsContainer = styled.div`
   margin-top: 15px;
 `;
 
-class RemoveComment extends React.Component {
-  state = {
-    dialogOpen: false,
-  };
-  openDialog = () => this.setState({ dialogOpen: true });
-  closeDialog = () => this.setState({ dialogOpen: false });
-  handleRemoveComment = () => this.props.removeComment(this.props.comment_id);
+const RemoveComment = ({ loading, comment_id, removeComment }) => {
+  const [dialogOpen, setOpenDialog] = useState(false);
+  const handleRemoveComment = () => removeComment(comment_id);
 
-  render() {
-    const dialogOpen = this.state.dialogOpen;
-    const { loading } = this.props;
-    return (
-      <>
-        <StyledButton onClick={this.openDialog}>
-          <Icon small src={BinIcon} />
-        </StyledButton>
-        {dialogOpen && (
-          <>
-            <StyledDeleteBackground />
-            <StyledDeleteAlert>
-              <h3>Are you sure to delete this comment ?</h3>
-              <StyledButtonsContainer>
-                <Button danger onClick={this.closeDialog}>
-                  No
-                </Button>
-                <Button secondary onClick={this.handleRemoveComment}>
-                  Yes
-                </Button>
-              </StyledButtonsContainer>
-              {loading && (
-                <Loader
-                  type="ThreeDots"
-                  color={theme.colors.primary}
-                  height={40}
-                  width={40}
-                />
-              )}
-            </StyledDeleteAlert>
-          </>
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <StyledButton onClick={() => setOpenDialog(true)}>
+        <Icon small src={BinIcon} />
+      </StyledButton>
+      {dialogOpen && (
+        <>
+          <StyledDeleteBackground />
+          <StyledDeleteAlert>
+            <h3>Are you sure to delete this comment ?</h3>
+            <StyledButtonsContainer>
+              <Button danger onClick={() => setOpenDialog(false)}>
+                No
+              </Button>
+              <Button secondary onClick={handleRemoveComment}>
+                Yes
+              </Button>
+            </StyledButtonsContainer>
+            {loading && (
+              <Loader
+                type="ThreeDots"
+                color={theme.colors.primary}
+                height={40}
+                width={40}
+              />
+            )}
+          </StyledDeleteAlert>
+        </>
+      )}
+    </>
+  );
+};
 
 const mapStateToProps = (state) => ({
   loading: state.UI.loadingRemoveComment,

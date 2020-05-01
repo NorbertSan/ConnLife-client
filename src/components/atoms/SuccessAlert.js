@@ -10,6 +10,7 @@ const SuccessAlert = styled.div`
   text-align: center;
   border-radius: 10px;
   padding: 10px;
-  margin: 0 15px;
+  margin: 0 auto;
+  width: 300px;
 `;
 export default SuccessAlert;

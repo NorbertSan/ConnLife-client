@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, Redirect } from "react-router-dom";
 import theme from "utils/theme";
@@ -30,37 +30,29 @@ const StyledNickName = styled(NickName)`
   margin-left: 60px;
 `;
 
-class Notifications extends React.Component {
-  state = {
-    type: "new",
-  };
-  handleChangeOption = (e) =>
-    this.setState({
-      type: e.target.value,
-    });
-  render() {
-    const { type } = this.state;
-    const { auth } = this.props;
-    return (
-      <StyledWrapper>
-        {!auth ? (
-          <Redirect to="/login" />
-        ) : (
-          <>
-            <StyledHeader>
-              <Link to="/">
-                <BackButton />
-              </Link>
-              <StyledNickName>Notifications</StyledNickName>
-            </StyledHeader>
-            <NotificationsTypeSelect changeOption={this.handleChangeOption} />
-            <NotificationsList type={type} />
-          </>
-        )}
-      </StyledWrapper>
-    );
-  }
-}
+const Notifications = ({ auth }) => {
+  const [type, changeType] = useState("new");
+  return (
+    <StyledWrapper>
+      {!auth ? (
+        <Redirect to="/login" />
+      ) : (
+        <>
+          <StyledHeader>
+            <Link to="/">
+              <BackButton />
+            </Link>
+            <StyledNickName>Notifications</StyledNickName>
+          </StyledHeader>
+          <NotificationsTypeSelect
+            changeOption={(e) => changeType(e.target.value)}
+          />
+          <NotificationsList type={type} />
+        </>
+      )}
+    </StyledWrapper>
+  );
+};
 const mapStateToProps = (state) => ({
   auth: state.user.auth,
 });

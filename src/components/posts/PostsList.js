@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -20,32 +20,27 @@ const StyledAlert = styled.h3`
   margin-top: 40px;
 `;
 
-class PostsList extends React.Component {
-  componentDidMount() {
-    this.props.getAllPosts();
-  }
-  render() {
-    const { posts, loading, loadingAddPost } = this.props;
-    return (
-      <StyledWrapper>
-        {loading ? (
-          <PostsSkeleton />
-        ) : (
-          <>
-            {loadingAddPost && <SinglePostSkeleton />}
-            {posts.length > 0 ? (
-              posts.map((post) => (
-                <PostItem post={post} key={`post:${post.post_id}`} />
-              ))
-            ) : (
-              <StyledAlert>There is no posts</StyledAlert>
-            )}
-          </>
-        )}
-      </StyledWrapper>
-    );
-  }
-}
+const PostsList = ({ getAllPosts, posts, loading, loadingAddPost }) => {
+  useEffect(() => getAllPosts(), [getAllPosts]);
+  return (
+    <StyledWrapper>
+      {loading ? (
+        <PostsSkeleton />
+      ) : (
+        <>
+          {loadingAddPost && <SinglePostSkeleton />}
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <PostItem post={post} key={`post:${post.post_id}`} />
+            ))
+          ) : (
+            <StyledAlert>There is no posts</StyledAlert>
+          )}
+        </>
+      )}
+    </StyledWrapper>
+  );
+};
 
 const mapStateToProps = (state) => ({
   posts: state.data.posts,

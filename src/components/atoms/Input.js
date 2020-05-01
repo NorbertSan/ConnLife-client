@@ -9,12 +9,12 @@ const Input = styled.input`
   color: ${theme.colors.secondary};
   padding: 7px 10px;
   border-radius: 10px;
-  border: 1px solid ${theme.colors.secondary};
+  border: 2px solid ${theme.colors.secondary};
   &::placeholder {
     color: grey;
   }
   &:focus {
-    border: 1px solid ${theme.colors.primary};
+    border: 2px solid ${theme.colors.primary};
   }
   ${({ secondary }) =>
     secondary &&

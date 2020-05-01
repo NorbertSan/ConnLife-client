@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import theme from "utils/theme";
 import PropTypes from "prop-types";
@@ -63,50 +63,41 @@ const StyledBackButton = styled(Button)`
   color: ${theme.colors.error};
 `;
 
-class RemovePost extends React.Component {
-  state = {
-    dialogOpen: false,
-  };
-  openDialog = () => this.setState({ dialogOpen: true });
-  closeDialog = () => this.setState({ dialogOpen: false });
-  handleRemovePost = () => this.props.removePost(this.props.post_id);
-
-  render() {
-    const dialogOpen = this.state.dialogOpen;
-    const { loading } = this.props;
-    return (
-      <>
-        <StyledButton onClick={this.openDialog}>
-          <Icon small src={BinIcon} />
-        </StyledButton>
-        {dialogOpen && (
-          <>
-            <StyledDeleteBackground />
-            <StyledDeleteAlert>
-              <h3>Are you sure to delete this post ?</h3>
-              <StyledButtonsContainer>
-                <StyledBackButton onClick={this.closeDialog}>
-                  No
-                </StyledBackButton>
-                <Button secondary onClick={this.handleRemovePost}>
-                  Yes
-                </Button>
-              </StyledButtonsContainer>
-              {loading && (
-                <Loader
-                  type="ThreeDots"
-                  color={theme.colors.primary}
-                  height={40}
-                  width={40}
-                />
-              )}
-            </StyledDeleteAlert>
-          </>
-        )}
-      </>
-    );
-  }
-}
+const RemovePost = ({ loading, removePost, post_id }) => {
+  const [dialogOpen, toogleDialog] = useState(false);
+  const handleRemovePost = () => removePost(post_id);
+  return (
+    <>
+      <StyledButton onClick={() => toogleDialog(true)}>
+        <Icon small src={BinIcon} />
+      </StyledButton>
+      {dialogOpen && (
+        <>
+          <StyledDeleteBackground />
+          <StyledDeleteAlert>
+            <h3>Are you sure to delete this post ?</h3>
+            <StyledButtonsContainer>
+              <StyledBackButton onClick={() => toogleDialog(false)}>
+                No
+              </StyledBackButton>
+              <Button secondary onClick={handleRemovePost}>
+                Yes
+              </Button>
+            </StyledButtonsContainer>
+            {loading && (
+              <Loader
+                type="ThreeDots"
+                color={theme.colors.primary}
+                height={40}
+                width={40}
+              />
+            )}
+          </StyledDeleteAlert>
+        </>
+      )}
+    </>
+  );
+};
 
 const mapStateToProps = (state) => ({
   loading: state.UI.loadingRemovePost,
