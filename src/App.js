@@ -16,6 +16,7 @@ import PostDetails from "pages/PostDetails";
 import Login from "pages/Login";
 import SignUp from "pages/SignUp";
 import Notifications from "pages/Notifications";
+import NotFound from "pages/NotFound";
 
 axios.defaults.baseURL = "https://connlifeserver.herokuapp.com";
 
@@ -47,6 +48,7 @@ const App = () => (
         <Route exact path="/login" component={Login} />
         <Route exact path="/signUp" component={SignUp} />
         <Route exact path="/notifications" component={Notifications} />
+        <Route path="/" component={NotFound} />
       </Switch>
     </BrowserRouter>
   </Provider>
