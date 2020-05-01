@@ -118,13 +118,13 @@ export const markReadNotification = (notification_id) => (dispatch) => {
     });
 };
 
-export const updateAvatar = (avatar) => (dispatch) => {
+export const updateAvatar = (data) => (dispatch) => {
   axios
-    .put("/user/avatar", avatar)
+    .put("/user/avatar", data)
     .then(() => {
       dispatch({
         type: UPDATE_AVATAR,
-        payload: avatar,
+        payload: data,
       });
     })
     .catch((err) => {

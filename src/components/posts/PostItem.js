@@ -20,9 +20,9 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 
 const StyledWrapper = styled.article`
-  padding: 30px 0;
+  padding: 30px 10px;
   display: flex;
-  border-top: 1px solid ${theme.colors.primary};
+  border-bottom: 1px solid ${theme.colors.primary};
   position: relative;
 `;
 const StyledContainer = styled.div`

@@ -186,12 +186,23 @@ export default (state = initialState, action) => {
       };
     case UPDATE_AVATAR:
       // action.payload.avatar = 'avatar3'
+      // action.payload.nickName = 'nick3'
       return {
         ...state,
         userInfo: {
           ...state.userInfo,
           avatar: action.payload.avatar,
         },
+        posts: state.posts.map((post) =>
+          post.nickName === action.payload.nickName
+            ? { ...post, avatar: action.payload.avatar }
+            : post
+        ),
+        likes: state.likes.map((like) =>
+          like.nickName === action.payload.nickName
+            ? { ...like, avatar: action.payload.avatar }
+            : like
+        ),
       };
     default:
       return { ...state };

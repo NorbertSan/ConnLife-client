@@ -1,6 +1,7 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
+import theme from "utils/theme";
 import { Redirect } from "react-router-dom";
 
 // COMPONENTS
@@ -15,7 +16,6 @@ import { connect } from "react-redux";
 const StyledWrapper = styled.section`
   display: flex;
   flex-direction: column;
-  padding: 10px;
   margin: auto;
   max-width: 760px;
   transition: opacity 0.3s ease-in-out;

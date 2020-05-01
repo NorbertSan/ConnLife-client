@@ -16,7 +16,7 @@ const StyledWrapper = styled.section`
   min-width: 300px;
   display: flex;
   flex-direction: column;
-  position: fixed;
+  position: absolute;
   left: 0%;
   transform: translateX(-100%);
   top: 10vh;

@@ -17,7 +17,7 @@ import { addPost } from "redux/actions/dataActions";
 const StyledWrapper = styled.div`
   position: relative;
   display: flex;
-  padding-bottom: 30px;
+  padding: 30px 10px;
   border-bottom: 1px solid ${theme.colors.primary};
 `;
 const StyledForm = styled.form`

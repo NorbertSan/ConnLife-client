@@ -45,14 +45,15 @@ const StyledExtraInfo = styled.div`
 
 const UserInfo = ({ userInfo, loggedUserInfo, loggedNickName }) => {
   let userInfoToDisplay;
-  console.log(userInfo);
   if (loggedUserInfo) userInfoToDisplay = { ...loggedUserInfo };
   else userInfoToDisplay = { ...userInfo };
   return (
     <StyledWrapper>
       <div style={{ position: "relative" }}>
         <StyledUserIcon big src={avatars[userInfoToDisplay.avatar]} />
-        {loggedNickName === userInfo.nickName && <EditAvatar />}
+        {(loggedNickName === userInfo.nickName || loggedUserInfo) && (
+          <EditAvatar />
+        )}
       </div>
       <StyledName>{`${userInfoToDisplay.firstName} ${userInfoToDisplay.lastName}`}</StyledName>
       <NickName small>@{userInfoToDisplay.nickName}</NickName>

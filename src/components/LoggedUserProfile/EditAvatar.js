@@ -77,10 +77,11 @@ const StyledAvatar = styled.img`
     `}
 `;
 
-const EditAvatar = ({ avatar, updateAvatar }) => {
+const EditAvatar = ({ avatar, updateAvatar, nickName }) => {
   const [dialogOpen, toogleDialog] = useState(false);
   const [newAvatar, changeAvatar] = useState(avatar);
-  const handleUpdateAvatar = () => updateAvatar({ avatar: newAvatar });
+  const handleUpdateAvatar = () =>
+    updateAvatar({ avatar: newAvatar, nickName });
   return (
     <>
       <StyledButton onClick={() => toogleDialog(true)}>
@@ -88,7 +89,6 @@ const EditAvatar = ({ avatar, updateAvatar }) => {
       </StyledButton>
       {dialogOpen && (
         <>
-          <StyledBackground />
           <StyledDialog>
             <XButton onClick={() => toogleDialog(false)}>X</XButton>
             {Object.keys(avatars).map((item, index) => (
@@ -103,6 +103,7 @@ const EditAvatar = ({ avatar, updateAvatar }) => {
               Save
             </Button>
           </StyledDialog>
+          <StyledBackground />
         </>
       )}
     </>
@@ -111,6 +112,7 @@ const EditAvatar = ({ avatar, updateAvatar }) => {
 
 const mapStateToProps = (state) => ({
   avatar: state.user.userInfo.avatar,
+  nickName: state.user.userInfo.nickName,
 });
 
 export default connect(mapStateToProps, { updateAvatar })(EditAvatar);

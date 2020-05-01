@@ -15,6 +15,8 @@ body{
     background:${theme.colors.tertiary};
     color:${theme.colors.secondary};
     margin:0;
+    overflow-x:hidden;
+    width:100vw;
 }  
 a{
     text-decoration:none!important;

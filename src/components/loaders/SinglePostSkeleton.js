@@ -3,7 +3,7 @@ import styled from "styled-components";
 import theme from "utils/theme";
 
 const StyledSingleSkeleton = styled.li`
-  padding: 20px 0;
+  padding: 35px 10px;
   display: flex;
   border-top: 1px solid ${theme.colors.primary};
 `;
