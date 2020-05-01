@@ -61,7 +61,6 @@ const StyledValidateError = styled(ValidateError)`
   display: block;
   text-align: center;
   margin-top: 10px;
-  color: ${theme.colors.error};
 `;
 const StyledXButton = styled.div`
   position: absolute;
@@ -144,10 +143,14 @@ class UpdateProfile extends React.Component {
             "Update"
           )}
         </StyledButton>
-
-        {errors.bio && <StyledValidateError>{errors.bio}</StyledValidateError>}
+        {errors.success && (
+          <StyledValidateError>{errors.success}</StyledValidateError>
+        )}
+        {errors.bio && (
+          <StyledValidateError danger>{errors.bio}</StyledValidateError>
+        )}
         {errors.website && (
-          <StyledValidateError>{errors.website}</StyledValidateError>
+          <StyledValidateError danger>{errors.website}</StyledValidateError>
         )}
       </StyledForm>
     );

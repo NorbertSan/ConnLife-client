@@ -13,7 +13,7 @@ import LogoutButton from "./LogoutButton";
 import { connect } from "react-redux";
 
 const StyledWrapper = styled.section`
-  width: 70%;
+  min-width: 300px;
   display: flex;
   flex-direction: column;
   position: fixed;

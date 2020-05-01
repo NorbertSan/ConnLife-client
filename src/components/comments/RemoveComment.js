@@ -17,11 +17,9 @@ const StyledButton = styled.div`
   background: none;
   border: none;
   outline: none;
-  width: 30px;
-  height: 30px;
   position: absolute;
   top: 15px;
-  right: 15px;
+  right: 20px;
   cursor: pointer;
   font-size: ${theme.fontSize.s};
   text-align: center;
@@ -58,11 +56,6 @@ const StyledButtonsContainer = styled.div`
   justify-content: space-around;
   margin-top: 15px;
 `;
-const StyledBackButton = styled(Button)`
-  background: transparent;
-  border: 2px solid ${theme.colors.error};
-  color: ${theme.colors.error};
-`;
 
 class RemoveComment extends React.Component {
   state = {
@@ -78,7 +71,7 @@ class RemoveComment extends React.Component {
     return (
       <>
         <StyledButton onClick={this.openDialog}>
-          <Icon src={BinIcon} />
+          <Icon small src={BinIcon} />
         </StyledButton>
         {dialogOpen && (
           <>
@@ -86,9 +79,9 @@ class RemoveComment extends React.Component {
             <StyledDeleteAlert>
               <h3>Are you sure to delete this comment ?</h3>
               <StyledButtonsContainer>
-                <StyledBackButton onClick={this.closeDialog}>
+                <Button danger onClick={this.closeDialog}>
                   No
-                </StyledBackButton>
+                </Button>
                 <Button secondary onClick={this.handleRemoveComment}>
                   Yes
                 </Button>

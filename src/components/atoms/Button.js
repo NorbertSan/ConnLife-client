@@ -28,6 +28,13 @@ const Button = styled.button`
       color: ${theme.colors.secondary};
       border: 1px solid ${theme.colors.tertiary};
     `}
+  ${({ danger }) =>
+    danger &&
+    css`
+      background: transparent;
+      border: 2px solid ${theme.colors.error};
+      color: ${theme.colors.error};
+    `}
 `;
 
 export default Button;

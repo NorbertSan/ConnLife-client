@@ -1,21 +1,36 @@
 import React from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import UserIcon from "components/atoms/UserIcon";
-import noFaceIcon from "assets/images/no-face.png";
-import NickName from "components/atoms/NickName";
-import Icon from "components/atoms/Icon";
-import LikeIcon from "assets/icons/like.svg";
-import CommentIcon from "assets/icons/comment.svg";
+import styled, { css } from "styled-components";
+import { Link, withRouter } from "react-router-dom";
 import theme from "utils/theme";
 import moment from "moment";
+import PropTypes from "prop-types";
+import avatars from "utils/avatars";
+
+// COMPONENTS
+import NickName from "components/atoms/NickName";
+import Icon from "components/atoms/Icon";
 import CreatedAtInfo from "components/atoms/CreatedAtInfo";
+
+// ICONS
+import UserIcon from "components/atoms/UserIcon";
+import LikeIcon from "assets/icons/like.svg";
+import CommentIcon from "assets/icons/comment.svg";
+
+// REDUX STUFF
+import { connect } from "react-redux";
+import { compose } from "redux";
+import { markReadNotification } from "redux/actions/userActions";
 
 const StyledWrapper = styled.li`
   display: flex;
-  padding: 10px 10px 20px 10px;
+  padding: 10px 10px 30px 10px;
   border-top: 1px solid ${theme.colors.primary};
   position: relative;
+  ${({ seen }) =>
+    seen &&
+    css`
+      background: rgba(255, 255, 255, 0.05);
+    `}
 `;
 const StyledContent = styled.div`
   margin-top: 10px;
@@ -43,16 +58,28 @@ const StyledInnerWrapper = styled.div`
   align-items: flex-end;
 `;
 
-const NotificationItem = ({ notification }) => {
+const NotificationItem = ({ notification, match, markReadNotification }) => {
   const message =
     notification.type === "like" ? "liked your post" : "comment your post";
+  const IconType = notification.type === "like" ? LikeIcon : CommentIcon;
+  const handleNotificationClick = () =>
+    markReadNotification(notification.notification_id);
   return (
-    <StyledWrapper>
-      <StyledIcon big src={LikeIcon} />
-      <StyledContent as={Link} to={`/user/${notification.nickName}/post/12`}>
-        <UserIcon src={noFaceIcon} />
+    <StyledWrapper seen={!notification.seen}>
+      <StyledIcon big src={IconType} />
+      <StyledContent
+        as={Link}
+        onClick={handleNotificationClick}
+        to={{
+          pathname: `/user/${notification.sender}/post/${notification.post_id}`,
+          state: { prevPath: match.url },
+        }}
+      >
+        <Link to={`/user/${notification.sender}`}>
+          <UserIcon src={avatars[notification.avatar]} />
+        </Link>
         <StyledInnerWrapper>
-          <StyledNickName>{notification.nickName}</StyledNickName>
+          <StyledNickName>{notification.sender}</StyledNickName>
           <span>{message}</span>
         </StyledInnerWrapper>
         <StyledCreatedAtInfo>
@@ -63,4 +90,12 @@ const NotificationItem = ({ notification }) => {
   );
 };
 
-export default NotificationItem;
+NotificationItem.propTypes = {
+  notification: PropTypes.object.isRequired,
+  markReadNotification: PropTypes.func.isRequired,
+};
+
+export default compose(
+  connect(null, { markReadNotification }),
+  withRouter
+)(NotificationItem);

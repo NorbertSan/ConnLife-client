@@ -27,11 +27,18 @@ import {
   REMOVE_COMMENT,
   LOADING_REMOVE_COMMENT,
   CLEAR_LOADING_REMOVE_COMMENT,
+  EDIT_COMMENT,
+  LOADING_EDIT_COMMENT,
+  CLEAR_LOADING_EDIT_COMMENT,
+  SET_ERRORS_EDIT_COMMENT,
+  EDIT_POST,
+  LOADING_EDIT_POST,
+  CLEAR_LOADING_EDIT_POST,
+  SET_ERRORS_EDIT_POST,
 } from "redux/types";
 import axios from "axios";
 
 export const getAllPosts = () => (dispatch) => {
-  console.log("getallPosts action fired");
   dispatch({ type: LOADING_POSTS });
   axios
     .get("/posts")
@@ -45,7 +52,6 @@ export const getAllPosts = () => (dispatch) => {
 };
 
 export const getUserData = (nickName) => (dispatch) => {
-  console.log("getUserData action fired");
   dispatch({ type: LOADING_USER });
   axios
     .get(`/user/${nickName}`)
@@ -62,7 +68,6 @@ export const getUserData = (nickName) => (dispatch) => {
 };
 
 export const addPost = (data) => (dispatch) => {
-  console.log("addPost action fired");
   dispatch({ type: LOADING_ADD_POST });
   axios
     .post("/post", data)
@@ -78,7 +83,6 @@ export const addPost = (data) => (dispatch) => {
 };
 
 export const getSinglePost = (post_id) => (dispatch) => {
-  console.log("get single post action fired");
   dispatch({ type: LOADING_SINGLE_POST });
   axios
     .get(`/post/${post_id}`)
@@ -94,15 +98,11 @@ export const getSinglePost = (post_id) => (dispatch) => {
 };
 
 export const addComment = (data, post_id) => (dispatch) => {
-  console.log("add comment action fired");
   dispatch({ type: LOADING_ADD_COMMENT });
   dispatch({ type: CLEAR_ERROR_NEW_COMMENT });
-  console.log(post_id);
   axios
     .post(`/comment/${post_id}`, data)
     .then((res) => {
-      console.log("add comment success");
-      console.log(res.data);
       dispatch({
         type: ADD_COMMENT,
         payload: res.data,
@@ -111,14 +111,12 @@ export const addComment = (data, post_id) => (dispatch) => {
     })
     .catch((err) => {
       console.error(err);
-      console.log("add comment failed");
       dispatch({ type: CLEAR_LOADING_ADD_COMMENT });
       dispatch({ type: SET_ERRORS_NEW_COMMENT, payload: err.response.data });
     });
 };
 
 export const like = (post_id) => (dispatch) => {
-  console.log("like action fired");
   axios
     .get(`/like/${post_id}`)
     .then((res) => {
@@ -133,7 +131,6 @@ export const like = (post_id) => (dispatch) => {
 };
 
 export const unlike = (post_id) => (dispatch) => {
-  console.log("UNlike action fired");
   axios
     .get(`/unlike/${post_id}`)
     .then((res) => {
@@ -151,9 +148,7 @@ export const unlike = (post_id) => (dispatch) => {
 };
 
 export const removePost = (post_id) => (dispatch) => {
-  console.log("removePost action fired");
   dispatch({ type: LOADING_REMOVE_POST });
-  console.log(post_id);
   axios
     .delete(`/post/${post_id}`)
     .then((res) => {
@@ -167,9 +162,7 @@ export const removePost = (post_id) => (dispatch) => {
 };
 
 export const removeComment = (comment_id) => (dispatch) => {
-  console.log("remove comment action fired");
   dispatch({ type: LOADING_REMOVE_COMMENT });
-  console.log(comment_id);
   axios
     .delete(`/comment/${comment_id}`)
     .then((res) => {
@@ -179,5 +172,47 @@ export const removeComment = (comment_id) => (dispatch) => {
     .catch((err) => {
       console.error(err.response);
       dispatch({ type: CLEAR_LOADING_REMOVE_COMMENT });
+    });
+};
+
+export const editComment = (body, comment_id) => (dispatch) => {
+  dispatch({ type: LOADING_EDIT_COMMENT });
+  axios
+    .put(`/comment/${comment_id}`, body)
+    .then(() => {
+      dispatch({ type: EDIT_COMMENT, payload: { comment_id, body } });
+      dispatch({ type: CLEAR_LOADING_EDIT_COMMENT });
+      dispatch({
+        type: SET_ERRORS_EDIT_COMMENT,
+        payload: {
+          success: "Comment edited",
+        },
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      dispatch({ type: SET_ERRORS_EDIT_COMMENT, payload: err.response.data });
+      dispatch({ type: CLEAR_LOADING_EDIT_COMMENT });
+    });
+};
+
+export const editPost = (body, post_id) => (dispatch) => {
+  dispatch({ type: LOADING_EDIT_POST });
+  axios
+    .put(`/post/${post_id}`, body)
+    .then(() => {
+      dispatch({ type: EDIT_POST, payload: { post_id, body } });
+      dispatch({ type: CLEAR_LOADING_EDIT_POST });
+      dispatch({
+        type: SET_ERRORS_EDIT_POST,
+        payload: {
+          success: "Post edited",
+        },
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      dispatch({ type: SET_ERRORS_EDIT_POST, payload: err.response.data });
+      dispatch({ type: CLEAR_LOADING_EDIT_POST });
     });
 };

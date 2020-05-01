@@ -21,7 +21,7 @@ const StyledButton = styled.div`
   height: 30px;
   position: absolute;
   top: 15px;
-  right: 15px;
+  right: 25px;
   cursor: pointer;
   font-size: ${theme.fontSize.s};
   text-align: center;
@@ -32,7 +32,7 @@ const StyledDeleteBackground = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.3);
   z-index: 2;
 `;
 const StyledDeleteAlert = styled.div`
@@ -77,7 +77,7 @@ class RemovePost extends React.Component {
     return (
       <>
         <StyledButton onClick={this.openDialog}>
-          <Icon src={BinIcon} />
+          <Icon small src={BinIcon} />
         </StyledButton>
         {dialogOpen && (
           <>

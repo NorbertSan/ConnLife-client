@@ -35,7 +35,6 @@ class PostDetailsView extends React.Component {
   }
   render() {
     const { auth, postNotFound } = this.props;
-    const nickName = this.props.match.params.nickName;
     return (
       <>
         {postNotFound ? (
@@ -47,7 +46,13 @@ class PostDetailsView extends React.Component {
             ) : (
               <>
                 <StyledHeader>
-                  <Link to={`/user/${nickName}`}>
+                  <Link
+                    to={
+                      this.props.location.state
+                        ? this.props.location.state.prevPath
+                        : "/"
+                    }
+                  >
                     <BackButton />
                   </Link>
                   <StyledNickName>Post</StyledNickName>

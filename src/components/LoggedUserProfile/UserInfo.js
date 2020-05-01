@@ -3,14 +3,15 @@ import styled, { css } from "styled-components";
 import theme from "utils/theme";
 import moment from "moment";
 import PropTypes from "prop-types";
+import avatars from "utils/avatars";
 
 // COMPONENTS
 import UserIcon from "components/atoms/UserIcon";
 import Icon from "components/atoms/Icon";
 import NickName from "components/atoms/NickName";
+import EditAvatar from "components/LoggedUserProfile/EditAvatar";
 
 //ICONS / IMAGES
-import noFaceIcon from "assets/images/no-face.png";
 import CalendarIcon from "assets/icons/calendar.svg";
 import WebsiteIcon from "assets/icons/website.svg";
 
@@ -42,13 +43,17 @@ const StyledExtraInfo = styled.div`
   }
 `;
 
-const UserInfo = ({ userInfo, loggedUserInfo }) => {
+const UserInfo = ({ userInfo, loggedUserInfo, loggedNickName }) => {
   let userInfoToDisplay;
+  console.log(userInfo);
   if (loggedUserInfo) userInfoToDisplay = { ...loggedUserInfo };
   else userInfoToDisplay = { ...userInfo };
   return (
     <StyledWrapper>
-      <StyledUserIcon big src={noFaceIcon} />
+      <div style={{ position: "relative" }}>
+        <StyledUserIcon big src={avatars[userInfoToDisplay.avatar]} />
+        {loggedNickName === userInfo.nickName && <EditAvatar />}
+      </div>
       <StyledName>{`${userInfoToDisplay.firstName} ${userInfoToDisplay.lastName}`}</StyledName>
       <NickName small>@{userInfoToDisplay.nickName}</NickName>
       {userInfoToDisplay.bio && <p>{userInfoToDisplay.bio}</p>}
@@ -76,11 +81,13 @@ const UserInfo = ({ userInfo, loggedUserInfo }) => {
 
 const mapStateToProps = (state) => ({
   userInfo: state.data.userInfo,
+  loggedNickName: state.user.userInfo.nickName,
 });
 
 UserInfo.propTypes = {
   userInfo: PropTypes.object.isRequired,
   loggedUserInfo: PropTypes.object,
+  loggedNickName: PropTypes.string,
 };
 
 export default connect(mapStateToProps)(UserInfo);

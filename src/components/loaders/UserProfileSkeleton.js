@@ -4,7 +4,10 @@ import theme from "utils/theme";
 
 import SinglePostSkeleton from "components/loaders/SinglePostSkeleton";
 
-const StyledWrapper = styled.div``;
+const StyledWrapper = styled.div`
+  margin: auto;
+  max-width: 760px;
+`;
 const StyledRect = styled.div`
   width: 100%;
   height: 120px;

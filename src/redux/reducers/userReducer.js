@@ -9,6 +9,8 @@ import {
   UPDATE_USER_PROFILE,
   REMOVE_COMMENT,
   ADD_COMMENT,
+  MARK_READ_NOTIFICATION,
+  UPDATE_AVATAR,
 } from "redux/types";
 const initialState = {
   auth: false,
@@ -79,6 +81,26 @@ export default (state = initialState, action) => {
       return {
         ...state,
         comments: [action.payload, ...state.comments],
+      };
+    case MARK_READ_NOTIFICATION:
+      // action.payload = notification_id
+      return {
+        ...state,
+        notifications: state.notifications.reduce((result, current) => {
+          if (current.notification_id === action.payload)
+            return [...result, { ...current, seen: true }];
+          else return [...result, current];
+        }, []),
+      };
+
+    case UPDATE_AVATAR:
+      // action.payload.avatar = 'avatar3'
+      return {
+        ...state,
+        userInfo: {
+          ...state.userInfo,
+          avatar: action.payload.avatar,
+        },
       };
     default:
       return { ...state };

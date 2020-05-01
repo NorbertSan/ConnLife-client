@@ -4,12 +4,12 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import theme from "utils/theme";
 import PropTypes from "prop-types";
+import avatars from "utils/avatars";
 
 // COMPONENTS
 import Icon from "components/atoms/Icon";
 import PlusIcon from "assets/icons/plus.svg";
 import UserIcon from "components/atoms/UserIcon";
-import noFaceIcon from "assets/images/no-face.png";
 import NickName from "components/atoms/NickName";
 import LikeButton from "components/likes/LikeButton";
 import CommentButton from "components/comments/CommentButton";
@@ -25,6 +25,8 @@ const StyledWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 10px;
+  margin: auto;
+  max-width: 760px;
 `;
 const StyledHeader = styled.header`
   display: flex;
@@ -48,7 +50,7 @@ class PostItemDetailsView extends React.Component {
   };
   openAddCommentForm = () => this.setState({ isAddCommentFormOpen: true });
   render() {
-    const { post, loading } = this.props;
+    const { post, loading, userAvatar } = this.props;
     const { isAddCommentFormOpen } = this.state;
     return (
       <StyledWrapper>
@@ -58,11 +60,13 @@ class PostItemDetailsView extends React.Component {
           <>
             <StyledHeader>
               <Link to={`/user/${post.nickName}`}>
-                <UserIcon big src={noFaceIcon} />
+                <UserIcon big src={avatars[post.avatar]} />
               </Link>
               <div>
-                <NickName>Norbert Sanpruch</NickName>
-                <span>@norbasss</span>
+                <NickName>
+                  {post.firstName} {post.lastName}
+                </NickName>
+                <span>@{post.nickName}</span>
               </div>
             </StyledHeader>
             <p>{post.body}</p>

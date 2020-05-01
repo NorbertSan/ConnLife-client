@@ -22,6 +22,7 @@ const StyledWrapper = styled.form`
   flex-direction: column;
   padding: 0 40px;
   margin: 0 auto;
+  max-width: 560px;
 `;
 const StyledInputField = styled.div`
   display: flex;

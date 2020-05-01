@@ -10,6 +10,12 @@ const Icon = styled.img`
       width: 30px;
       height: 30px;
     `}
+  ${({ small }) =>
+    small &&
+    css`
+      width: 15px;
+      height: 15px;
+    `}
 `;
 
 export default Icon;

@@ -1,24 +1,26 @@
 import React from "react";
 import styled from "styled-components";
 import moment from "moment";
+import theme from "utils/theme";
+import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
+import avatars from "utils/avatars";
 
 // COMPONENTS
 import UserIcon from "components/atoms/UserIcon";
-import noFaceIcon from "assets/images/no-face.png";
 import NickName from "components/atoms/NickName";
 import CreatedAtInfo from "components/atoms/CreatedAtInfo";
 import LikeButton from "components/likes/LikeButton";
 import CommentButton from "components/comments/CommentButton";
-import theme from "utils/theme";
-import { Link } from "react-router-dom";
 import RemovePost from "components/posts/RemovePost";
+import EditPost from "components/posts/EditPost";
 
 // REDUX STUFF
 import { connect } from "react-redux";
+import { compose } from "redux";
 
 const StyledWrapper = styled.article`
-  padding: 10px 0;
+  padding: 30px 0;
   display: flex;
   border-top: 1px solid ${theme.colors.primary};
   position: relative;
@@ -26,6 +28,7 @@ const StyledWrapper = styled.article`
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
 `;
 const StyledNickName = styled(NickName)`
   margin-top: 0;
@@ -39,16 +42,24 @@ const StyledLink = styled(Link)`
   margin-right: 7px;
 `;
 
-const PostItem = ({ post, nickName, loggedUserPosts }) => (
+const PostItem = ({ post, nickName, loggedUserPosts, match }) => (
   <StyledWrapper>
     {loggedUserPosts.filter((item) => item.post_id === post.post_id).length !==
-      0 && <RemovePost post_id={post.post_id} />}
+      0 && (
+      <>
+        <RemovePost post_id={post.post_id} />
+        <EditPost post_id={post.post_id} />
+      </>
+    )}
     <StyledLink to={`/user/${nickName ? nickName : post.nickName}`}>
-      <UserIcon src={noFaceIcon} />
+      <UserIcon src={avatars[post.avatar]} />
     </StyledLink>
     <StyledContainer
       as={Link}
-      to={`/user/${post.nickName}/post/${post.post_id}`}
+      to={{
+        pathname: `/user/${post.nickName}/post/${post.post_id}`,
+        state: { prevPath: match.url },
+      }}
     >
       <StyledNickName>{nickName ? nickName : post.nickName}</StyledNickName>
       <CreatedAtInfo>{moment(post.createdAt).fromNow()}</CreatedAtInfo>
@@ -71,4 +82,4 @@ PostItem.propTypes = {
   nickName: PropTypes.string,
 };
 
-export default connect(mapStateToProps)(PostItem);
+export default compose(connect(mapStateToProps), withRouter)(PostItem);

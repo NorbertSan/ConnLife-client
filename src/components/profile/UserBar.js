@@ -65,7 +65,7 @@ class UserBar extends React.Component {
     }));
   render() {
     const { isPostsOpen, isLikesOpen } = this.state;
-    const { posts, nickName, loggedUserNickName } = this.props;
+    const { posts, nickName, loggedUserNickName, likes } = this.props;
     return (
       <>
         <StyledWrapper>
@@ -95,12 +95,12 @@ class UserBar extends React.Component {
               </StyledAlert>
             ))}
           {isLikesOpen &&
-            (posts.length > 0 ? (
-              posts.map((post) => (
+            (likes.length > 0 ? (
+              likes.map((likedPost) => (
                 <PostItem
-                  key={`post:${post.post_id}`}
-                  nickName={nickName}
-                  post={post}
+                  key={`post:${likedPost.post_id}`}
+                  nickName={likedPost.nickName}
+                  post={likedPost}
                 />
               ))
             ) : (
@@ -122,6 +122,7 @@ const mapStateToProps = (state) => ({
 
 UserBar.propTypes = {
   posts: PropTypes.array.isRequired,
+  likes: PropTypes.array,
   nickName: PropTypes.string,
   loggedUserNickName: PropTypes.string,
 };

@@ -13,7 +13,10 @@ import NotificationsList from "components/notifications/NotificationsList";
 // REDUX STUFF
 import { connect } from "react-redux";
 
-const StyledWrapper = styled.section``;
+const StyledWrapper = styled.section`
+  margin: auto;
+  max-width: 760px;
+`;
 const StyledHeader = styled.header`
   display: flex;
   align-items: center;
@@ -29,7 +32,7 @@ const StyledNickName = styled(NickName)`
 
 class Notifications extends React.Component {
   state = {
-    type: "all",
+    type: "new",
   };
   handleChangeOption = (e) =>
     this.setState({

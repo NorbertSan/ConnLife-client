@@ -16,6 +16,8 @@ const StyledWrapper = styled.section`
   display: flex;
   flex-direction: column;
   padding: 10px;
+  margin: auto;
+  max-width: 760px;
   transition: opacity 0.3s ease-in-out;
   ${({ blurEffect }) =>
     blurEffect &&

@@ -17,8 +17,12 @@ import UserProfileSkeleton from "components/loaders/UserProfileSkeleton";
 // REDUX STUFF
 import { connect } from "react-redux";
 import { getUserData } from "redux/actions/dataActions";
+import store from "redux/store";
+import { CLEAR_SET_ERRORS_UPDATE_PROFILE } from "redux/types";
 
 const StyledWrapper = styled.div`
+  margin: auto;
+  max-width: 760px;
   position: relative;
   ${({ isUpdateProfileOpen }) =>
     isUpdateProfileOpen &&
@@ -63,13 +67,17 @@ class ProfileView extends React.Component {
     this.props.getUserData(nickNameParam);
   }
   openUpdateProfile = () => this.setState({ isUpdateProfileOpen: true });
-  closeUpdateProfile = () => this.setState({ isUpdateProfileOpen: false });
+  closeUpdateProfile = () => {
+    store.dispatch({ type: CLEAR_SET_ERRORS_UPDATE_PROFILE });
+    this.setState({ isUpdateProfileOpen: false });
+  };
   render() {
     const { isUpdateProfileOpen } = this.state;
     const {
       auth,
       userInfo,
       posts,
+      likes,
       loggedUserNickName,
       loading,
       userNotFound,
@@ -104,7 +112,7 @@ class ProfileView extends React.Component {
                       Set up profile
                     </StyledButton>
                   )}
-                  <UserBar posts={posts} />
+                  <UserBar posts={posts} likes={likes} />
                 </StyledWrapper>
               </>
             )}
@@ -120,8 +128,10 @@ const mapStateToProps = (state) => ({
   userInfo: state.data.userInfo,
   loggedUserNickName: state.user.userInfo.nickName,
   posts: state.data.posts,
+  likes: state.data.likes,
   userNotFound: state.UI.userNotFound,
   loading: state.UI.loadingUser,
+  errors: state.UI.errorsUpdateProfile,
 });
 
 ProfileView.propTypes = {
@@ -130,8 +140,10 @@ ProfileView.propTypes = {
   getUserData: PropTypes.func.isRequired,
   loggedUserNickName: PropTypes.string,
   posts: PropTypes.array.isRequired,
+  likes: PropTypes.array.isRequired,
   loading: PropTypes.bool.isRequired,
   userNotFound: PropTypes.bool.isRequired,
+  errors: PropTypes.object,
 };
 
 export default connect(mapStateToProps, { getUserData })(ProfileView);

@@ -9,11 +9,15 @@ import {
   REMOVE_POST,
   UPDATE_USER_PROFILE,
   REMOVE_COMMENT,
+  EDIT_COMMENT,
+  EDIT_POST,
+  UPDATE_AVATAR,
 } from "redux/types";
 const initialState = {
   posts: [],
   userInfo: {},
   singlePost: {},
+  likes: [],
 };
 
 export default (state = initialState, action) => {
@@ -65,9 +69,21 @@ export default (state = initialState, action) => {
           likesCount: oldLikesCount + 1,
         };
       }
+      state.likes = state.likes.reduce((result, current) => {
+        if (current.post_id === action.payload.post_id)
+          return [
+            ...result,
+            { ...current, likesCount: current.likesCount + 1 },
+          ];
+        else return [...result, current];
+      }, []);
+
       state.posts = state.posts.reduce((result, current) => {
         if (current.post_id === action.payload.post_id) {
-          current.likesCount++;
+          return [
+            ...result,
+            { ...current, likesCount: current.likesCount + 1 },
+          ];
         }
         return [...result, current];
       }, []);
@@ -76,10 +92,9 @@ export default (state = initialState, action) => {
         ...state,
       };
     case REMOVE_LIKE:
-      // action.payload = like_id
       if (state.singlePost.postDetails) {
         state.singlePost.likes = [...state.singlePost.likes].filter(
-          (item) => item.like_id !== action.payload
+          (item) => item.like_id !== action.payload.like_id
         );
         let oldLikesCount = state.singlePost.postDetails.likesCount;
         state.singlePost.postDetails = {
@@ -88,9 +103,25 @@ export default (state = initialState, action) => {
         };
       }
 
+      state.likes = [...state.likes].filter(
+        (item) => item.like_id !== action.payload.like_id
+      );
+
+      state.likes = state.likes.reduce((result, current) => {
+        if (current.post_id === action.payload.post_id)
+          return [
+            ...result,
+            { ...current, likesCount: current.likesCount - 1 },
+          ];
+        else return [...result, current];
+      }, []);
+
       state.posts = state.posts.reduce((result, current) => {
         if (current.post_id === action.payload.post_id) {
-          current.likesCount--;
+          return [
+            ...result,
+            { ...current, likesCount: current.likesCount - 1 },
+          ];
         }
         return [...result, current];
       }, []);
@@ -125,9 +156,42 @@ export default (state = initialState, action) => {
         ...state.singlePost.postDetails,
         commentsCount: commentsCounter - 1,
       };
-
       return {
         ...state,
+      };
+
+    case EDIT_COMMENT:
+      // action.payload = { comment_id, body}
+      state.singlePost = {
+        ...state.singlePost,
+        comments: state.singlePost.comments.reduce((result, current) => {
+          if (current.comment_id === action.payload.comment_id)
+            return [...result, { ...current, body: action.payload.body.body }];
+          else return [...result, current];
+        }, []),
+      };
+      return {
+        ...state,
+      };
+
+    case EDIT_POST:
+      // action.payload = { post_id, body}
+      state.posts = state.posts.reduce((result, current) => {
+        if (current.post_id === action.payload.post_id)
+          return [...result, { ...current, body: action.payload.body.body }];
+        else return [...result, current];
+      }, []);
+      return {
+        ...state,
+      };
+    case UPDATE_AVATAR:
+      // action.payload.avatar = 'avatar3'
+      return {
+        ...state,
+        userInfo: {
+          ...state.userInfo,
+          avatar: action.payload.avatar,
+        },
       };
     default:
       return { ...state };

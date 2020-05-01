@@ -2,9 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import theme from "utils/theme";
 import PropTypes from "prop-types";
+import avatars from "utils/avatars";
 
 // COMPONENTS
-import noFaceIcon from "assets/images/no-face.png";
 import UserIcon from "components/atoms/UserIcon";
 import Textarea from "components/atoms/Textarea";
 import Button from "components/atoms/Button";
@@ -54,11 +54,11 @@ class AddPost extends React.Component {
   };
   render() {
     const { body } = this.state;
-    const { errors } = this.props;
+    const { errors, userAvatar } = this.props;
     return (
       <>
         <StyledWrapper>
-          <UserIcon src={noFaceIcon} />
+          <UserIcon src={avatars[userAvatar]} />
           <StyledForm onSubmit={this.handleSubmit}>
             <Textarea
               id="body"
@@ -66,7 +66,9 @@ class AddPost extends React.Component {
               onChange={this.handleChange}
               placeholder="What's happening ?"
             />
-            <StyledButton type="submit">Share</StyledButton>
+            <StyledButton secondary type="submit">
+              Share
+            </StyledButton>
           </StyledForm>
           {errors.body && (
             <StyledValidateError>{errors.body}</StyledValidateError>
@@ -79,11 +81,13 @@ class AddPost extends React.Component {
 
 const mapStateToProps = (state) => ({
   errors: state.UI.errorsAddPost,
+  userAvatar: state.user.userInfo.avatar,
 });
 
 AddPost.propTypes = {
   addPost: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,
+  userAvatar: PropTypes.string,
 };
 
 export default connect(mapStateToProps, { addPost })(AddPost);

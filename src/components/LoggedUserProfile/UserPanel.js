@@ -8,6 +8,7 @@ import theme from "utils/theme";
 import NotificationIcon from "assets/icons/notification.svg";
 import UserIcon from "assets/icons/user.svg";
 import Icon from "components/atoms/Icon";
+import Badge from "components/atoms/Badge";
 
 // REDUX STUFF
 import { connect } from "react-redux";
@@ -21,9 +22,10 @@ const StyledLink = styled(Link)`
   align-items: flex-end;
   margin-bottom: 15px;
   font-size: ${theme.fontSize.s};
+  position: relative;
 `;
 
-const UserPanel = ({ nickName }) => (
+const UserPanel = ({ nickName, notifications }) => (
   <StyledWrapper>
     <StyledLink to={`/user/${nickName}`}>
       <Icon src={UserIcon} />
@@ -31,6 +33,9 @@ const UserPanel = ({ nickName }) => (
     </StyledLink>
     <StyledLink to="/notifications">
       <Icon src={NotificationIcon} />
+      {notifications.filter((item) => item.seen === 0).length > 0 && (
+        <Badge> {notifications.filter((item) => item.seen === 0).length}</Badge>
+      )}
       <span>Notifications</span>
     </StyledLink>
   </StyledWrapper>
@@ -38,10 +43,12 @@ const UserPanel = ({ nickName }) => (
 
 const mapStateToProps = (state) => ({
   nickName: state.user.userInfo.nickName,
+  notifications: state.user.notifications,
 });
 
 UserPanel.propTypes = {
   nickName: PropTypes.string,
+  notifications: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(UserPanel);

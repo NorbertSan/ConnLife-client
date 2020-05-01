@@ -6,6 +6,7 @@ const StyledButton = styled.button`
   border: none;
   background: none;
   outline: none;
+  cursor: pointer;
   width: 40px;
   height: 40px;
   img {

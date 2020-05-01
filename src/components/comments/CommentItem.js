@@ -4,13 +4,14 @@ import theme from "utils/theme";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import avatars from "utils/avatars";
 
 // COMPONENTS
 import UserIcon from "components/atoms/UserIcon";
-import noFaceIcon from "assets/images/no-face.png";
 import NickName from "components/atoms/NickName";
 import CreatedAtInfo from "components/atoms/CreatedAtInfo";
 import RemoveComment from "components/comments/RemoveComment";
+import EditComment from "components/comments/EditComment";
 
 // REDUX STUFF
 import { connect } from "react-redux";
@@ -41,10 +42,15 @@ const CommentItem = ({ comment, loggedUserComments }) => (
     {loggedUserComments &&
       loggedUserComments.filter(
         (item) => item.comment_id === comment.comment_id
-      ).length !== 0 && <RemoveComment comment_id={comment.comment_id} />}
+      ).length !== 0 && (
+        <>
+          <RemoveComment comment_id={comment.comment_id} />
+          <EditComment comment_id={comment.comment_id} />
+        </>
+      )}
     <StyledUserFaceWrapper>
-      <Link to={`/user/${comment.NickName}`}>
-        <UserIcon src={noFaceIcon} />
+      <Link to={`/user/${comment.nickName}`}>
+        <UserIcon src={avatars[comment.avatar]} />
       </Link>
       <StyledVerticalLine />
     </StyledUserFaceWrapper>

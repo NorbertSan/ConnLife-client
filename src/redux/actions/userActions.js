@@ -14,26 +14,28 @@ import {
   LOADING_UPDATE_PROFILE,
   CLEAR_LOADING_UPDATE_PROFILE,
   SET_ERRORS_UPDATE_PROFILE,
-  CLEAR_SET_ERRORS_UPDATE_PROFILE,
+  MARK_READ_NOTIFICATION,
+  UPDATE_AVATAR,
 } from "redux/types";
 import axios from "axios";
 
 export const loginUser = (credentials, history) => (dispatch) => {
-  console.log("loginuser action fired");
   dispatch({ type: LOADING_UI_LOGIN });
   dispatch({ type: CLEAR_ERRORS_LOGIN });
   axios
-    .post("/login", credentials)
+    .post("/login", credentials, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    })
     .then((res) => {
       dispatch({ type: CLEAR_LOADING_UI_LOGIN });
-      console.log("login success");
       setAuthorizationToken(res.data.accessToken);
       dispatch(getLoggedUserData());
       history.push("/");
     })
     .catch((err) => {
       console.error(err);
-      console.log("login failed");
       dispatch({ type: CLEAR_LOADING_UI_LOGIN });
       dispatch({
         type: SET_ERRORS_LOGIN,
@@ -43,7 +45,6 @@ export const loginUser = (credentials, history) => (dispatch) => {
 };
 
 export const createAccount = (data, history) => (dispatch) => {
-  console.log("create account action fired");
   dispatch({ type: LOADING_UI_SIGNUP });
   dispatch({ type: CLEAR_ERRORS_SIGNUP });
   axios
@@ -55,7 +56,6 @@ export const createAccount = (data, history) => (dispatch) => {
     })
     .catch((err) => {
       console.error(err);
-      console.log("create account failed");
       dispatch({ type: CLEAR_LOADING_UI_SIGNUP });
       dispatch({
         type: SET_ERRORS_SIGNUP,
@@ -65,7 +65,6 @@ export const createAccount = (data, history) => (dispatch) => {
 };
 
 export const logoutUser = () => (dispatch) => {
-  console.log("logoutuser action fired");
   localStorage.removeItem("AuthToken");
   delete axios.defaults.headers.common["Authorization"];
   dispatch({
@@ -74,7 +73,6 @@ export const logoutUser = () => (dispatch) => {
 };
 
 export const getLoggedUserData = () => (dispatch) => {
-  console.log("getLoggedUserData action fired");
   axios
     .get("/user")
     .then((res) => {
@@ -86,19 +84,51 @@ export const getLoggedUserData = () => (dispatch) => {
 };
 
 export const updateProfile = (data) => (dispatch) => {
-  console.log("update profile action fired");
-  dispatch({ type: CLEAR_SET_ERRORS_UPDATE_PROFILE });
   dispatch({ type: LOADING_UPDATE_PROFILE });
   axios
     .put("/user", data)
     .then(() => {
       dispatch({ type: CLEAR_LOADING_UPDATE_PROFILE });
       dispatch({ type: UPDATE_USER_PROFILE, payload: data });
+      dispatch({
+        type: SET_ERRORS_UPDATE_PROFILE,
+        payload: {
+          success: "Profile updated",
+        },
+      });
     })
     .catch((err) => {
       console.error(err);
       dispatch({ type: SET_ERRORS_UPDATE_PROFILE, payload: err.response.data });
       dispatch({ type: CLEAR_LOADING_UPDATE_PROFILE });
+    });
+};
+
+export const markReadNotification = (notification_id) => (dispatch) => {
+  axios
+    .put(`/notification/${notification_id}`)
+    .then(() => {
+      dispatch({
+        type: MARK_READ_NOTIFICATION,
+        payload: notification_id,
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+export const updateAvatar = (avatar) => (dispatch) => {
+  axios
+    .put("/user/avatar", avatar)
+    .then(() => {
+      dispatch({
+        type: UPDATE_AVATAR,
+        payload: avatar,
+      });
+    })
+    .catch((err) => {
+      console.error(err);
     });
 };
 

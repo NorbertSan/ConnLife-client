@@ -33,6 +33,14 @@ import {
   CLEAR_LOADING_UPDATE_PROFILE,
   LOADING_REMOVE_COMMENT,
   CLEAR_LOADING_REMOVE_COMMENT,
+  LOADING_EDIT_COMMENT,
+  CLEAR_LOADING_EDIT_COMMENT,
+  SET_ERRORS_EDIT_COMMENT,
+  CLEAR_SET_ERRORS_EDIT_COMMENT,
+  LOADING_EDIT_POST,
+  CLEAR_LOADING_EDIT_POST,
+  SET_ERRORS_EDIT_POST,
+  CLEAR_SET_ERRORS_EDIT_POST,
 } from "redux/types";
 const initialState = {
   loadingLogin: false,
@@ -53,6 +61,10 @@ const initialState = {
   errorsUpdateProfile: {},
   loadingUpdateProfile: false,
   loadingRemoveComment: false,
+  loadingUpdateComment: false,
+  errorsCommentEdit: {},
+  loadingUpdatePost: false,
+  errorsPostEdit: {},
 };
 
 export default (state = initialState, action) => {
@@ -230,6 +242,46 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loadingRemoveComment: false,
+      };
+    case LOADING_EDIT_COMMENT:
+      return {
+        ...state,
+        loadingUpdateComment: true,
+      };
+    case CLEAR_LOADING_EDIT_COMMENT:
+      return {
+        ...state,
+        loadingUpdateComment: false,
+      };
+    case SET_ERRORS_EDIT_COMMENT:
+      return {
+        ...state,
+        errorsCommentEdit: action.payload,
+      };
+    case CLEAR_SET_ERRORS_EDIT_COMMENT:
+      return {
+        ...state,
+        errorsCommentEdit: null,
+      };
+    case LOADING_EDIT_POST:
+      return {
+        ...state,
+        loadingUpdatePost: true,
+      };
+    case CLEAR_LOADING_EDIT_POST:
+      return {
+        ...state,
+        loadingUpdatePost: false,
+      };
+    case SET_ERRORS_EDIT_POST:
+      return {
+        ...state,
+        errorsPostEdit: action.payload,
+      };
+    case CLEAR_SET_ERRORS_EDIT_POST:
+      return {
+        ...state,
+        errorsPostEdit: null,
       };
     default:
       return { ...state };
