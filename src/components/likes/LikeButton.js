@@ -37,15 +37,10 @@ const StyledImage = styled.img`
 
 const LikeButton = ({ likesCount, big, post_id, like, unlike, likedPosts }) => {
   const handleClick = (e) => {
-    // TODO 1) check if logged user already like this post
     e.preventDefault();
-    if (likedPosts.filter((item) => item.post_id === post_id).length === 0) {
-      // like
+    if (likedPosts.filter((item) => item.post_id === post_id).length === 0)
       like(post_id);
-    } else {
-      // unlike
-      unlike(post_id);
-    }
+    else unlike(post_id);
   };
   return (
     <StyledButton onClick={handleClick}>

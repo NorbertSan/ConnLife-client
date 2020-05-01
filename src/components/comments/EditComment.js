@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import theme from "utils/theme";
@@ -65,83 +65,72 @@ const StyledValidateError = styled(ValidateError)`
   margin-top: 15px;
 `;
 
-class EditComment extends React.Component {
-  state = {
-    dialogOpen: false,
-    body: "",
-    errors: {},
+const EditComment = ({
+  loading,
+  errors,
+  editComment,
+  comment_id,
+  comments,
+}) => {
+  const [body, setBodyValue] = useState("");
+  const [dialogOpen, setOpenDialog] = useState(false);
+  const handleEditComment = (e) => {
+    e.preventDefault();
+    editComment({ body }, comment_id);
   };
-  componentDidMount() {
-    const editComment = this.props.comments.find(
-      (item) => (item.comment_id = this.props.comment_id)
-    );
-    this.setState({ body: editComment.body });
-  }
-  componentDidUpdate(props, prevState) {
-    if (this.state.dialogOpen === true && prevState.dialogOpen === false) {
-      const editComment = this.props.comments.find(
-        (item) => (item.comment_id = this.props.comment_id)
-      );
-      this.setState({ body: editComment.body });
-    }
-  }
-  handleInputChange = (e) => this.setState({ [e.target.id]: e.target.value });
-  openDialog = () => this.setState({ dialogOpen: true });
-  closeDialog = () => {
+  useEffect(() => {
+    const editComment = comments.find((item) => (item.comment_id = comment_id));
+    setBodyValue(editComment.body);
+  }, [comments, comment_id]);
+  useEffect(() => {
+    const editComment = comments.find((item) => (item.comment_id = comment_id));
+    setBodyValue(editComment.body);
     store.dispatch({ type: CLEAR_SET_ERRORS_EDIT_COMMENT });
-    this.setState({ dialogOpen: false });
-  };
-  handleEditComment = () =>
-    this.props.editComment({ body: this.state.body }, this.props.comment_id);
+  }, [dialogOpen, comment_id, comments]);
 
-  render() {
-    const { dialogOpen, body } = this.state;
-    const { loading, errors } = this.props;
-    return (
-      <>
-        <StyledButton onClick={this.openDialog}>
-          <Icon small src={EditIcon} />
-        </StyledButton>
-        {dialogOpen && (
-          <>
-            <StyledDeleteBackground />
-            <StyledDeleteAlert>
-              <h4>Update comment</h4>
-              <Textarea
-                maxLength="1000"
-                value={body}
-                id="body"
-                onChange={this.handleInputChange}
+  return (
+    <>
+      <StyledButton onClick={() => setOpenDialog(true)}>
+        <Icon small src={EditIcon} />
+      </StyledButton>
+      {dialogOpen && (
+        <>
+          <StyledDeleteBackground />
+          <StyledDeleteAlert>
+            <h4>Update comment</h4>
+            <Textarea
+              maxLength="1000"
+              value={body}
+              onChange={(e) => setBodyValue(e.target.value)}
+            />
+            <StyledButtonsContainer>
+              <Button onClick={() => setOpenDialog(false)} danger tertiary>
+                Back
+              </Button>
+              <Button secondary onClick={handleEditComment}>
+                Edit
+              </Button>
+            </StyledButtonsContainer>
+            {loading && (
+              <Loader
+                type="ThreeDots"
+                color={theme.colors.primary}
+                height={40}
+                width={40}
               />
-              <StyledButtonsContainer>
-                <Button onClick={this.closeDialog} danger tertiary>
-                  Back
-                </Button>
-                <Button secondary onClick={this.handleEditComment}>
-                  Edit
-                </Button>
-              </StyledButtonsContainer>
-              {loading && (
-                <Loader
-                  type="ThreeDots"
-                  color={theme.colors.primary}
-                  height={40}
-                  width={40}
-                />
-              )}
-              {errors && errors.success && (
-                <StyledValidateError>{errors.success}</StyledValidateError>
-              )}
-              {errors && errors.body && (
-                <StyledValidateError danger>{errors.body}</StyledValidateError>
-              )}
-            </StyledDeleteAlert>
-          </>
-        )}
-      </>
-    );
-  }
-}
+            )}
+            {errors && errors.success && (
+              <StyledValidateError>{errors.success}</StyledValidateError>
+            )}
+            {errors && errors.body && (
+              <StyledValidateError danger>{errors.body}</StyledValidateError>
+            )}
+          </StyledDeleteAlert>
+        </>
+      )}
+    </>
+  );
+};
 
 const mapStateToProps = (state) => ({
   loading: state.UI.loadingUpdateComment,

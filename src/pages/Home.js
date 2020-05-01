@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
-import theme from "utils/theme";
 import { Redirect } from "react-router-dom";
 
 // COMPONENTS
@@ -26,39 +25,30 @@ const StyledWrapper = styled.section`
     `}
 `;
 
-class HomeView extends React.Component {
-  state = {
-    isUserProfileOpen: false,
-  };
-  toogleUserProfile = () =>
-    this.setState((prevState) => ({
-      isUserProfileOpen: !prevState.isUserProfileOpen,
-    }));
-
-  render() {
-    const { isUserProfileOpen } = this.state;
-    const { auth } = this.props;
-    return (
-      <>
-        {!auth ? (
-          <Redirect to="/login" />
-        ) : (
-          <>
-            <Navbar toogleUserProfile={this.toogleUserProfile} />
-            <LoggedUserProfile
-              toogleUserProfile={this.toogleUserProfile}
-              isOpen={isUserProfileOpen}
-            />
-            <StyledWrapper blurEffect={isUserProfileOpen}>
-              <AddPost />
-              <PostsList />
-            </StyledWrapper>
-          </>
-        )}
-      </>
-    );
-  }
-}
+const HomeView = ({ auth }) => {
+  const [isUserProfileOpen, toggleUserProfile] = useState(false);
+  const toogleUserProfileFunc = () =>
+    toggleUserProfile((prevState) => !prevState);
+  return (
+    <>
+      {!auth ? (
+        <Redirect to="/login" />
+      ) : (
+        <>
+          <Navbar toogleUserProfile={toogleUserProfileFunc} />
+          <LoggedUserProfile
+            toogleUserProfile={toogleUserProfileFunc}
+            isOpen={isUserProfileOpen}
+          />
+          <StyledWrapper blurEffect={isUserProfileOpen}>
+            <AddPost />
+            <PostsList />
+          </StyledWrapper>
+        </>
+      )}
+    </>
+  );
+};
 
 const mapStateToProps = (state) => ({
   auth: state.user.auth,

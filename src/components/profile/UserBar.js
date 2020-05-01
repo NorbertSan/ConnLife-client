@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import theme from "utils/theme";
 import PropTypes from "prop-types";
@@ -18,6 +18,7 @@ const StyledWrapper = styled.ul`
   margin-bottom: 10px;
 `;
 const StyledLi = styled.li`
+  cursor: pointer;
   font-weight: ${theme.fontWeight.bold};
   position: relative;
   ${({ active }) =>
@@ -48,73 +49,65 @@ const StyledAlert = styled.h3`
   margin-top: 40px;
 `;
 
-class UserBar extends React.Component {
-  state = {
-    isPostsOpen: true,
-    isLikesOpen: false,
+const UserBar = ({ posts, nickName, loggedUserNickName, likes }) => {
+  const [isPostsOpen, tooglePosts] = useState(true);
+  const [isLikesOpen, toogleLikes] = useState(false);
+  const openPosts = () => {
+    tooglePosts(true);
+    toogleLikes(false);
   };
-  openPosts = () =>
-    this.setState((prevState) => ({
-      isPostsOpen: true,
-      isLikesOpen: false,
-    }));
-  openLikes = () =>
-    this.setState((prevState) => ({
-      isPostsOpen: false,
-      isLikesOpen: true,
-    }));
-  render() {
-    const { isPostsOpen, isLikesOpen } = this.state;
-    const { posts, nickName, loggedUserNickName, likes } = this.props;
-    return (
-      <>
-        <StyledWrapper>
-          <StyledLi onClick={this.openPosts} active={isPostsOpen}>
-            Posts
-          </StyledLi>
-          <StyledLi onClick={this.openLikes} active={isLikesOpen}>
-            Likes
-          </StyledLi>
-        </StyledWrapper>
-        <StyledPostsWrapper>
-          {isPostsOpen &&
-            (posts.length > 0 ? (
-              posts.map((post) => (
-                <PostItem
-                  key={`post:${post.post_id}`}
-                  nickName={nickName}
-                  post={post}
-                />
-              ))
-            ) : (
-              <StyledAlert>
-                {" "}
-                {loggedUserNickName === nickName
-                  ? "You don't own any posts yet"
-                  : `User ${nickName} has no posts `}{" "}
-              </StyledAlert>
-            ))}
-          {isLikesOpen &&
-            (likes.length > 0 ? (
-              likes.map((likedPost) => (
-                <PostItem
-                  key={`post:${likedPost.post_id}`}
-                  nickName={likedPost.nickName}
-                  post={likedPost}
-                />
-              ))
-            ) : (
-              <StyledAlert>
-                {loggedUserNickName === nickName
-                  ? "You don't have any liked posts"
-                  : `User ${nickName} has no liked posts `}
-              </StyledAlert>
-            ))}
-        </StyledPostsWrapper>
-      </>
-    );
-  }
-}
+  const openLikes = () => {
+    tooglePosts(false);
+    toogleLikes(true);
+  };
+  return (
+    <>
+      <StyledWrapper>
+        <StyledLi onClick={openPosts} active={isPostsOpen}>
+          Posts
+        </StyledLi>
+        <StyledLi onClick={openLikes} active={isLikesOpen}>
+          Likes
+        </StyledLi>
+      </StyledWrapper>
+      <StyledPostsWrapper>
+        {isPostsOpen &&
+          (posts.length > 0 ? (
+            posts.map((post) => (
+              <PostItem
+                key={`post:${post.post_id}`}
+                nickName={nickName}
+                post={post}
+              />
+            ))
+          ) : (
+            <StyledAlert>
+              {" "}
+              {loggedUserNickName === nickName
+                ? "You don't own any posts yet"
+                : `User ${nickName} has no posts `}{" "}
+            </StyledAlert>
+          ))}
+        {isLikesOpen &&
+          (likes.length > 0 ? (
+            likes.map((likedPost) => (
+              <PostItem
+                key={`post:${likedPost.post_id}`}
+                nickName={likedPost.nickName}
+                post={likedPost}
+              />
+            ))
+          ) : (
+            <StyledAlert>
+              {loggedUserNickName === nickName
+                ? "You don't have any liked posts"
+                : `User ${nickName} has no liked posts `}
+            </StyledAlert>
+          ))}
+      </StyledPostsWrapper>
+    </>
+  );
+};
 const mapStateToProps = (state) => ({
   nickName: state.data.userInfo.nickName,
   loggedUserNickName: state.user.userInfo.nickName,

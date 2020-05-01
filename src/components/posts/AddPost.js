@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import theme from "utils/theme";
 import PropTypes from "prop-types";
@@ -37,47 +37,34 @@ const StyledValidateError = styled(ValidateError)`
   transform: translateX(-50%);
 `;
 
-class AddPost extends React.Component {
-  state = {
-    body: "",
-  };
-  handleChange = (e) =>
-    this.setState({
-      [e.target.id]: e.target.value,
-    });
-  handleSubmit = (e) => {
+const AddPost = ({ userAvatar, errors, addPost }) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    this.props.addPost(this.state);
-    this.setState({
-      body: "",
-    });
+    addPost({ body });
+    setBodyValue("");
   };
-  render() {
-    const { body } = this.state;
-    const { errors, userAvatar } = this.props;
-    return (
-      <>
-        <StyledWrapper>
-          <UserIcon src={avatars[userAvatar]} />
-          <StyledForm onSubmit={this.handleSubmit}>
-            <Textarea
-              id="body"
-              value={body}
-              onChange={this.handleChange}
-              placeholder="What's happening ?"
-            />
-            <StyledButton secondary type="submit">
-              Share
-            </StyledButton>
-          </StyledForm>
-          {errors.body && (
-            <StyledValidateError>{errors.body}</StyledValidateError>
-          )}
-        </StyledWrapper>
-      </>
-    );
-  }
-}
+  const [body, setBodyValue] = useState("");
+  return (
+    <>
+      <StyledWrapper>
+        <UserIcon src={avatars[userAvatar]} />
+        <StyledForm onSubmit={handleSubmit}>
+          <Textarea
+            value={body}
+            onChange={(e) => setBodyValue(e.target.value)}
+            placeholder="What's happening ?"
+          />
+          <StyledButton secondary type="submit">
+            Share
+          </StyledButton>
+        </StyledForm>
+        {errors.body && (
+          <StyledValidateError>{errors.body}</StyledValidateError>
+        )}
+      </StyledWrapper>
+    </>
+  );
+};
 
 const mapStateToProps = (state) => ({
   errors: state.UI.errorsAddPost,

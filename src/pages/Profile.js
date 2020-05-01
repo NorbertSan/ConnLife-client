@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled, { css } from "styled-components";
 import { Link, Redirect } from "react-router-dom";
 import theme from "utils/theme";
@@ -58,70 +58,67 @@ const StyledButton = styled(Button)`
   margin: 25px 15px 15px auto;
 `;
 
-class ProfileView extends React.Component {
-  state = {
-    isUpdateProfileOpen: false,
-  };
-  componentDidMount() {
-    const nickNameParam = this.props.match.params.nickName;
-    this.props.getUserData(nickNameParam);
-  }
-  openUpdateProfile = () => this.setState({ isUpdateProfileOpen: true });
-  closeUpdateProfile = () => {
+const ProfileView = ({
+  auth,
+  userInfo,
+  posts,
+  likes,
+  loggedUserNickName,
+  loading,
+  userNotFound,
+  getUserData,
+  match,
+}) => {
+  const [isUpdateProfileOpen, toogleUpdateProfile] = useState(false);
+  useEffect(() => {
+    const nickNameParam = match.params.nickName;
+    getUserData(nickNameParam);
+  }, [getUserData, match]);
+
+  const openUpdateProfile = () => toogleUpdateProfile(true);
+  const closeUpdateProfile = () => {
     store.dispatch({ type: CLEAR_SET_ERRORS_UPDATE_PROFILE });
-    this.setState({ isUpdateProfileOpen: false });
+    toogleUpdateProfile(false);
   };
-  render() {
-    const { isUpdateProfileOpen } = this.state;
-    const {
-      auth,
-      userInfo,
-      posts,
-      likes,
-      loggedUserNickName,
-      loading,
-      userNotFound,
-    } = this.props;
-    return (
-      <>
-        {!auth ? (
-          <Redirect to="/login" />
-        ) : (
-          <>
-            {userNotFound ? (
-              <Alert404 text="Something went wrong, user not found" />
-            ) : loading ? (
-              <UserProfileSkeleton />
-            ) : (
-              <>
-                {isUpdateProfileOpen && (
-                  <UpdateProfile closeProfile={this.closeUpdateProfile} />
+  return (
+    <>
+      {!auth ? (
+        <Redirect to="/login" />
+      ) : (
+        <>
+          {userNotFound ? (
+            <Alert404 text="Something went wrong, user not found" />
+          ) : loading ? (
+            <UserProfileSkeleton />
+          ) : (
+            <>
+              {isUpdateProfileOpen && (
+                <UpdateProfile closeProfile={closeUpdateProfile} />
+              )}
+              <StyledWrapper isUpdateProfileOpen={isUpdateProfileOpen}>
+                <StyledBackLink to="/">
+                  <BackButton />
+                </StyledBackLink>
+                <StyledHeader>
+                  <StyledNickName>{userInfo.nickName}</StyledNickName>
+                  <span>{posts.length} Posts</span>
+                </StyledHeader>
+                <StyledRectangle />
+                <UserInfo />
+                {loggedUserNickName === userInfo.nickName && (
+                  <StyledButton secondary onClick={openUpdateProfile}>
+                    Set up profile
+                  </StyledButton>
                 )}
-                <StyledWrapper isUpdateProfileOpen={isUpdateProfileOpen}>
-                  <StyledBackLink to="/">
-                    <BackButton />
-                  </StyledBackLink>
-                  <StyledHeader>
-                    <StyledNickName>{userInfo.nickName}</StyledNickName>
-                    <span>{posts.length} Posts</span>
-                  </StyledHeader>
-                  <StyledRectangle />
-                  <UserInfo />
-                  {loggedUserNickName === userInfo.nickName && (
-                    <StyledButton secondary onClick={this.openUpdateProfile}>
-                      Set up profile
-                    </StyledButton>
-                  )}
-                  <UserBar posts={posts} likes={likes} />
-                </StyledWrapper>
-              </>
-            )}
-          </>
-        )}
-      </>
-    );
-  }
-}
+                <UserBar posts={posts} likes={likes} />
+              </StyledWrapper>
+            </>
+          )}
+        </>
+      )}
+    </>
+  );
+};
 
 const mapStateToProps = (state) => ({
   auth: state.user.auth,
