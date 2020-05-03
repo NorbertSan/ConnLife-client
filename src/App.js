@@ -18,20 +18,23 @@ import SignUp from "pages/SignUp";
 import Notifications from "pages/Notifications";
 import NotFound from "pages/NotFound";
 
-axios.defaults.baseURL = "https://connlifeserver.herokuapp.com";
+const BASE_URL = "https://connlifeserver.herokuapp.com";
+axios.defaults.baseURL = BASE_URL;
 
-const token = localStorage.AuthToken;
-if (token) {
+const authToken = () => {
+  const token = localStorage.AuthToken;
+  if (!token) return;
   const decodedToken = jwtDecode(token);
-  if (decodedToken.exp * 1000 < Date.now()) {
-    store.dispatch(logoutUser());
-    window.location.href = "/login";
-  } else {
+  const isTokenExpired = decodedToken.exp * 1000 < Date.now();
+  if (isTokenExpired) store.dispatch(logoutUser());
+  else {
     store.dispatch({ type: SET_AUTHENTICATED });
     axios.defaults.headers.common["Authorization"] = token;
     store.dispatch(getLoggedUserData());
   }
-}
+};
+
+authToken();
 
 const App = () => (
   <Provider store={store}>

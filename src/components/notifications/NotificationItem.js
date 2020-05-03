@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { Link, withRouter } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import theme from "utils/theme";
 import moment from "moment";
 import PropTypes from "prop-types";
@@ -17,8 +17,7 @@ import LikeIcon from "assets/icons/like.svg";
 import CommentIcon from "assets/icons/comment.svg";
 
 // REDUX STUFF
-import { connect } from "react-redux";
-import { compose } from "redux";
+import { useDispatch } from "react-redux";
 import { markReadNotification } from "redux/actions/userActions";
 
 const StyledWrapper = styled.li`
@@ -58,12 +57,14 @@ const StyledInnerWrapper = styled.div`
   align-items: flex-end;
 `;
 
-const NotificationItem = ({ notification, match, markReadNotification }) => {
+const NotificationItem = ({ notification }) => {
+  const dispatch = useDispatch();
   const message =
     notification.type === "like" ? "liked your post" : "comment your post";
   const IconType = notification.type === "like" ? LikeIcon : CommentIcon;
   const handleNotificationClick = () =>
-    markReadNotification(notification.notification_id);
+    dispatch(markReadNotification(notification.notification_id));
+  const location = useLocation();
   return (
     <StyledWrapper seen={!notification.seen}>
       <StyledIcon big src={IconType} />
@@ -72,7 +73,7 @@ const NotificationItem = ({ notification, match, markReadNotification }) => {
         onClick={handleNotificationClick}
         to={{
           pathname: `/user/${notification.sender}/post/${notification.post_id}`,
-          state: { prevPath: match.url },
+          state: { prevPath: location.pathname },
         }}
       >
         <Link to={`/user/${notification.sender}`}>
@@ -92,10 +93,6 @@ const NotificationItem = ({ notification, match, markReadNotification }) => {
 
 NotificationItem.propTypes = {
   notification: PropTypes.object.isRequired,
-  markReadNotification: PropTypes.func.isRequired,
 };
 
-export default compose(
-  connect(null, { markReadNotification }),
-  withRouter
-)(NotificationItem);
+export default NotificationItem;

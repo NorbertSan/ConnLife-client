@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import PostItem from "components/posts/PostItem";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const StyledWrapper = styled.ul`
   margin: 0;
@@ -49,7 +49,12 @@ const StyledAlert = styled.h3`
   margin-top: 40px;
 `;
 
-const UserBar = ({ posts, nickName, loggedUserNickName, likes }) => {
+const UserBar = ({ posts, likes }) => {
+  const nickName = useSelector((state) => state.data.userInfo.nickName);
+  const loggedUserNickName = useSelector(
+    (state) => state.user.userInfo.nickName
+  );
+
   const [isPostsOpen, tooglePosts] = useState(true);
   const [isLikesOpen, toogleLikes] = useState(false);
   const openPosts = () => {
@@ -108,16 +113,10 @@ const UserBar = ({ posts, nickName, loggedUserNickName, likes }) => {
     </>
   );
 };
-const mapStateToProps = (state) => ({
-  nickName: state.data.userInfo.nickName,
-  loggedUserNickName: state.user.userInfo.nickName,
-});
 
 UserBar.propTypes = {
   posts: PropTypes.array.isRequired,
   likes: PropTypes.array,
-  nickName: PropTypes.string,
-  loggedUserNickName: PropTypes.string,
 };
 
-export default connect(mapStateToProps)(UserBar);
+export default UserBar;

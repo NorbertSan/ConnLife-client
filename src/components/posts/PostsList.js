@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import PropTypes from "prop-types";
 
 // COMPONENTS
 import PostItem from "components/posts/PostItem";
@@ -8,7 +7,7 @@ import PostsSkeleton from "components/loaders/PostsSkeleton";
 import SinglePostSkeleton from "components/loaders/SinglePostSkeleton";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getAllPosts } from "redux/actions/dataActions";
 
 const StyledWrapper = styled.div`
@@ -20,8 +19,12 @@ const StyledAlert = styled.h3`
   margin-top: 40px;
 `;
 
-const PostsList = ({ getAllPosts, posts, loading, loadingAddPost }) => {
-  useEffect(() => getAllPosts(), [getAllPosts]);
+const PostsList = () => {
+  const posts = useSelector((state) => state.data.posts);
+  const loading = useSelector((state) => state.UI.loadingPosts);
+  const loadingAddPost = useSelector((state) => state.UI.loadingAddPost);
+  const dispatch = useDispatch();
+  useEffect(() => dispatch(getAllPosts()), [dispatch]);
   return (
     <StyledWrapper>
       {loading ? (
@@ -42,17 +45,4 @@ const PostsList = ({ getAllPosts, posts, loading, loadingAddPost }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  posts: state.data.posts,
-  loading: state.UI.loadingPosts,
-  loadingAddPost: state.UI.loadingAddPost,
-});
-
-PostsList.propTypes = {
-  posts: PropTypes.array.isRequired,
-  getAllPosts: PropTypes.func.isRequired,
-  loadingPosts: PropTypes.bool,
-  loadingAddPost: PropTypes.bool,
-};
-
-export default connect(mapStateToProps, { getAllPosts })(PostsList);
+export default PostsList;

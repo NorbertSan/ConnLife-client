@@ -14,7 +14,7 @@ import RemoveComment from "components/comments/RemoveComment";
 import EditComment from "components/comments/EditComment";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const StyledWrapper = styled.li`
   padding: 10px;
@@ -37,38 +37,36 @@ const StyledContentWrapper = styled.div`
   flex-direction: column;
 `;
 
-const CommentItem = ({ comment, loggedUserComments }) => (
-  <StyledWrapper>
-    {loggedUserComments &&
-      loggedUserComments.filter(
-        (item) => item.comment_id === comment.comment_id
-      ).length !== 0 && (
-        <>
-          <RemoveComment comment_id={comment.comment_id} />
-          <EditComment comment_id={comment.comment_id} />
-        </>
-      )}
-    <StyledUserFaceWrapper>
-      <Link to={`/user/${comment.nickName}`}>
-        <UserIcon src={avatars[comment.avatar]} />
-      </Link>
-      <StyledVerticalLine />
-    </StyledUserFaceWrapper>
-    <StyledContentWrapper>
-      <NickName>{comment.nickName}</NickName>
-      <CreatedAtInfo>{moment(comment.createdAt).fromNow()}</CreatedAtInfo>
-      <p>{comment.body}</p>
-    </StyledContentWrapper>
-  </StyledWrapper>
-);
+const CommentItem = ({ comment }) => {
+  const loggedUserComments = useSelector((state) => state.user.comments);
+  return (
+    <StyledWrapper>
+      {loggedUserComments &&
+        loggedUserComments.filter(
+          (item) => item.comment_id === comment.comment_id
+        ).length !== 0 && (
+          <>
+            <RemoveComment comment_id={comment.comment_id} />
+            <EditComment comment_id={comment.comment_id} />
+          </>
+        )}
+      <StyledUserFaceWrapper>
+        <Link to={`/user/${comment.nickName}`}>
+          <UserIcon src={avatars[comment.avatar]} />
+        </Link>
+        <StyledVerticalLine />
+      </StyledUserFaceWrapper>
+      <StyledContentWrapper>
+        <NickName>{comment.nickName}</NickName>
+        <CreatedAtInfo>{moment(comment.createdAt).fromNow()}</CreatedAtInfo>
+        <p>{comment.body}</p>
+      </StyledContentWrapper>
+    </StyledWrapper>
+  );
+};
 
 CommentItem.propTypes = {
   comment: PropTypes.object,
-  loggedUserComments: PropTypes.array.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  loggedUserComments: state.user.comments,
-});
-
-export default connect(mapStateToProps)(CommentItem);
+export default CommentItem;

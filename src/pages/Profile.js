@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled, { css } from "styled-components";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, useParams } from "react-router-dom";
 import theme from "utils/theme";
-import PropTypes from "prop-types";
 
 // COMPONENTS
 import NickName from "components/atoms/NickName";
@@ -15,14 +14,14 @@ import Alert404 from "components/atoms/Alert404";
 import UserProfileSkeleton from "components/loaders/UserProfileSkeleton";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getUserData } from "redux/actions/dataActions";
 import store from "redux/store";
 import { CLEAR_SET_ERRORS_UPDATE_PROFILE } from "redux/types";
 
 const StyledWrapper = styled.div`
   margin: auto;
-  max-width: 760px;
+  max-width: 960px;
   position: relative;
   ${({ isUpdateProfileOpen }) =>
     isUpdateProfileOpen &&
@@ -58,22 +57,23 @@ const StyledButton = styled(Button)`
   margin: 25px 15px 15px auto;
 `;
 
-const ProfileView = ({
-  auth,
-  userInfo,
-  posts,
-  likes,
-  loggedUserNickName,
-  loading,
-  userNotFound,
-  getUserData,
-  match,
-}) => {
+const ProfileView = () => {
+  const auth = useSelector((state) => state.user.auth);
+  const userInfo = useSelector((state) => state.data.userInfo);
+  const loggedUserNickName = useSelector(
+    (state) => state.user.userInfo.nickName
+  );
+  const posts = useSelector((state) => state.data.posts);
+  const likes = useSelector((state) => state.data.likes);
+  const userNotFound = useSelector((state) => state.UI.userNotFound);
+  const loading = useSelector((state) => state.UI.loadingUser);
+  const { nickName } = useParams();
   const [isUpdateProfileOpen, toogleUpdateProfile] = useState(false);
+  const dispatch = useDispatch();
   useEffect(() => {
-    const nickNameParam = match.params.nickName;
-    getUserData(nickNameParam);
-  }, [getUserData, match]);
+    const nickNameParam = nickName;
+    dispatch(getUserData(nickNameParam));
+  }, [dispatch, nickName]);
 
   const openUpdateProfile = () => toogleUpdateProfile(true);
   const closeUpdateProfile = () => {
@@ -93,7 +93,7 @@ const ProfileView = ({
           ) : (
             <>
               {isUpdateProfileOpen && (
-                <UpdateProfile closeProfile={closeUpdateProfile} />
+                <UpdateProfile toogleUpdateProfile={closeUpdateProfile} />
               )}
               <StyledWrapper isUpdateProfileOpen={isUpdateProfileOpen}>
                 <StyledBackLink to="/">
@@ -120,27 +120,4 @@ const ProfileView = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  auth: state.user.auth,
-  userInfo: state.data.userInfo,
-  loggedUserNickName: state.user.userInfo.nickName,
-  posts: state.data.posts,
-  likes: state.data.likes,
-  userNotFound: state.UI.userNotFound,
-  loading: state.UI.loadingUser,
-  errors: state.UI.errorsUpdateProfile,
-});
-
-ProfileView.propTypes = {
-  auth: PropTypes.bool.isRequired,
-  userInfo: PropTypes.object.isRequired,
-  getUserData: PropTypes.func.isRequired,
-  loggedUserNickName: PropTypes.string,
-  posts: PropTypes.array.isRequired,
-  likes: PropTypes.array.isRequired,
-  loading: PropTypes.bool.isRequired,
-  userNotFound: PropTypes.bool.isRequired,
-  errors: PropTypes.object,
-};
-
-export default connect(mapStateToProps, { getUserData })(ProfileView);
+export default ProfileView;

@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import styled from "styled-components";
-import PropTypes from "prop-types";
 import theme from "utils/theme";
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 
 // COMPONENTS
 import Loader from "react-loader-spinner";
@@ -14,7 +13,7 @@ import ValidateError from "components/atoms/ValidateError";
 import SuccessAlert from "components/atoms/SuccessAlert";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "redux/actions/userActions";
 
 const StyledWrapper = styled.form`
@@ -44,19 +43,35 @@ const StyledValidateError = styled(ValidateError)`
   margin-top: 20px;
 `;
 
-const Login = ({ loginUser, history, errors, loading, successAlert, auth }) => {
-  const [email, setEmailValue] = useState("");
-  const [password, setPasswordValue] = useState("");
+const Login = () => {
+  const errors = useSelector((state) => state.UI.errorsLogin);
+  const successAlert = useSelector((state) => state.UI.successAlert);
+  const loading = useSelector((state) => state.UI.loadingLogin);
+  const auth = useSelector((state) => state.user.auth);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const [inputsContent, setInputsContent] = useReducer(
+    (state, newState) => ({
+      ...state,
+      ...newState,
+    }),
+    {
+      email: "",
+      password: "",
+    }
+  );
   const handleSubmit = (e) => {
     e.preventDefault();
-    const credentials = {
-      email,
-      password,
-    };
-    loginUser(credentials, history);
-    setEmailValue("");
-    setPasswordValue("");
+    dispatch(loginUser(inputsContent, history));
+    setInputsContent({
+      email: "",
+      password: "",
+    });
   };
+  const handleInputChange = (e) =>
+    setInputsContent({
+      [e.target.name]: e.target.value,
+    });
   return (
     <>
       {auth ? (
@@ -73,17 +88,19 @@ const Login = ({ loginUser, history, errors, loading, successAlert, auth }) => {
               <label>Email:</label>
               <Input
                 secondary
-                value={email}
-                onChange={(e) => setEmailValue(e.target.value)}
+                name="email"
+                value={inputsContent.email}
+                onChange={handleInputChange}
               />
             </StyledInputField>
             <StyledInputField>
               <label>Password:</label>
               <Input
                 secondary
+                name="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPasswordValue(e.target.value)}
+                value={inputsContent.password}
+                onChange={handleInputChange}
               />
             </StyledInputField>
             <StyledButton secondary>
@@ -108,19 +125,4 @@ const Login = ({ loginUser, history, errors, loading, successAlert, auth }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.UI.errorsLogin,
-  successAlert: state.UI.successAlert,
-  loading: state.UI.loadingLogin,
-  auth: state.user.auth,
-});
-
-Login.propTypes = {
-  errors: PropTypes.object.isRequired,
-  loading: PropTypes.bool.isRequired,
-  loginUser: PropTypes.func.isRequired,
-  successAlert: PropTypes.object.isRequired,
-  auth: PropTypes.bool.isRequired,
-};
-
-export default connect(mapStateToProps, { loginUser })(Login);
+export default Login;

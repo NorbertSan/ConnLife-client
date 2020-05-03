@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import theme from "utils/theme";
 import PropTypes from "prop-types";
 
+// HOOK
+import useDetectOutsideClick from "hooks/useDetectOutsideClick";
 // COMPONENTS
 import Input from "components/atoms/Input";
 import Button from "components/atoms/Button";
@@ -11,8 +13,8 @@ import ValidateError from "components/atoms/ValidateError";
 import Loader from "react-loader-spinner";
 
 // REDUX STUFF
-import { connect } from "react-redux";
-import { updateProfile } from "redux/actions/userActions";
+import { useSelector, useDispatch } from "react-redux";
+import { updateProfile as updateProfileAction } from "redux/actions/userActions";
 
 const appear = keyframes`
   0%{
@@ -68,23 +70,22 @@ const StyledXButton = styled.div`
   right: 15px;
 `;
 
-const UpdateProfile = ({
-  updateProfile,
-  isOpen,
-  closeProfile,
-  errors,
-  loading,
-  userInfo,
-}) => {
+const UpdateProfile = ({ isOpen, toogleUpdateProfile }) => {
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const errors = useSelector((state) => state.UI.errorsUpdateProfile);
+  const loading = useSelector((state) => state.UI.loadingUpdateProfile);
   const [bio, setBioValue] = useState("");
   const [website, setWebsiteValue] = useState("");
+  const dispatch = useDispatch();
+  const modalRef = useRef(null);
+  useDetectOutsideClick(modalRef, toogleUpdateProfile);
   useEffect(() => {
     let { website, bio } = userInfo;
     if (website === null) website = "";
     if (bio === null) bio = "";
     setBioValue(bio);
-    setBioValue(website);
-  }, []);
+    setWebsiteValue(website);
+  }, [userInfo]);
   const handleSubmit = (e) => {
     e.preventDefault();
     let data = {
@@ -92,14 +93,19 @@ const UpdateProfile = ({
       website,
     };
     if (website.includes("http")) data.website = website.split("//")[1];
-    updateProfile(data);
+    dispatch(updateProfileAction(data));
   };
   return (
-    <StyledForm onSubmit={handleSubmit} autoComplete="off" isOpen={isOpen}>
+    <StyledForm
+      ref={modalRef}
+      onSubmit={handleSubmit}
+      autoComplete="off"
+      isOpen={isOpen}
+    >
       <StyledXButton
         onClick={(e) => {
           e.preventDefault();
-          closeProfile();
+          toogleUpdateProfile(false);
         }}
         type="none"
       >
@@ -148,18 +154,9 @@ const UpdateProfile = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  userInfo: state.user.userInfo,
-  errors: state.UI.errorsUpdateProfile,
-  loading: state.UI.loadingUpdateProfile,
-});
-
 UpdateProfile.propTypes = {
-  userInfo: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired,
   closeProfile: PropTypes.func.isRequired,
   updateProfile: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
 };
 
-export default connect(mapStateToProps, { updateProfile })(UpdateProfile);
+export default UpdateProfile;

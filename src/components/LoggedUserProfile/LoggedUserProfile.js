@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 import theme from "utils/theme";
 import PropTypes from "prop-types";
-
+// HOOK
+import useDetectOutsideClick from "hooks/useDetectOutsideClick";
 // COMPONENTS
 import UserInfo from "./UserInfo";
 import UserPanel from "./UserPanel";
@@ -10,7 +11,7 @@ import XButton from "components/atoms/XButton";
 import LogoutButton from "./LogoutButton";
 
 // REDUX
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const StyledWrapper = styled.section`
   min-width: 300px;
@@ -38,26 +39,25 @@ const StyledHeader = styled.div`
   border-bottom: 1px solid ${theme.colors.secondary};
 `;
 
-const LoggedUserProfile = ({ isOpen, toogleUserProfile, loggedUserInfo }) => (
-  <StyledWrapper isOpen={isOpen}>
-    <XButton type="none" onClick={toogleUserProfile}>
-      X
-    </XButton>
-    <StyledHeader>Account Info</StyledHeader>
-    <UserInfo loggedUserInfo={loggedUserInfo} />
-    <UserPanel />
-    <LogoutButton />
-  </StyledWrapper>
-);
+const LoggedUserProfile = ({ isOpen, toggleUserProfile }) => {
+  const modalRef = useRef(null);
+  const loggedUserInfo = useSelector((state) => state.user.userInfo);
+  useDetectOutsideClick(modalRef, toggleUserProfile);
+  return (
+    <StyledWrapper ref={modalRef} isOpen={isOpen}>
+      <XButton type="none" onClick={() => toggleUserProfile(false)}>
+        X
+      </XButton>
+      <StyledHeader>Account Info</StyledHeader>
+      <UserInfo loggedUserInfo={loggedUserInfo} />
+      <UserPanel />
+      <LogoutButton />
+    </StyledWrapper>
+  );
+};
 
 LoggedUserProfile.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  toogleUserProfile: PropTypes.func.isRequired,
-  loggedUserInfo: PropTypes.object.isRequired,
+  toggleUserProfile: PropTypes.func.isRequired,
 };
-
-const mapStateToProps = (state) => ({
-  loggedUserInfo: state.user.userInfo,
-});
-
-export default connect(mapStateToProps)(LoggedUserProfile);
+export default LoggedUserProfile;

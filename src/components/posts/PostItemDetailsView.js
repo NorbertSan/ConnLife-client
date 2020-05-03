@@ -3,7 +3,6 @@ import styled from "styled-components";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import theme from "utils/theme";
-import PropTypes from "prop-types";
 import avatars from "utils/avatars";
 
 // COMPONENTS
@@ -19,7 +18,7 @@ import AddComment from "components/comments/AddComment";
 import PostDetailsSkeleton from "components/loaders/PostDetailsSkeleton";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -44,8 +43,10 @@ const StyledAddCommentIcon = styled(Icon)`
   margin-left: auto;
 `;
 
-const PostItemDetailsView = ({ post, loading }) => {
+const PostItemDetailsView = () => {
   const [isAddCommentFormOpen, toggleAddCommentForm] = useState(false);
+  const post = useSelector((state) => state.data.singlePost.postDetails);
+  const loading = useSelector((state) => state.UI.loadingSinglePost);
   return (
     <StyledWrapper>
       {loading || !post ? (
@@ -86,14 +87,4 @@ const PostItemDetailsView = ({ post, loading }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  post: state.data.singlePost.postDetails,
-  loading: state.UI.loadingSinglePost,
-});
-
-PostItemDetailsView.propTypes = {
-  post: PropTypes.object,
-  loading: PropTypes.bool.isRequired,
-};
-
-export default connect(mapStateToProps)(PostItemDetailsView);
+export default PostItemDetailsView;

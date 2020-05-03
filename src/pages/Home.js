@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
-import PropTypes from "prop-types";
 import { Redirect } from "react-router-dom";
 
 // COMPONENTS
@@ -10,7 +9,7 @@ import LoggedUserProfile from "components/LoggedUserProfile/LoggedUserProfile";
 import Navbar from "components/Navbar/Navbar";
 
 // REDUX
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const StyledWrapper = styled.section`
   display: flex;
@@ -25,19 +24,18 @@ const StyledWrapper = styled.section`
     `}
 `;
 
-const HomeView = ({ auth }) => {
+const HomeView = () => {
+  const auth = useSelector((state) => state.user.auth);
   const [isUserProfileOpen, toggleUserProfile] = useState(false);
-  const toogleUserProfileFunc = () =>
-    toggleUserProfile((prevState) => !prevState);
   return (
     <>
       {!auth ? (
         <Redirect to="/login" />
       ) : (
         <>
-          <Navbar toogleUserProfile={toogleUserProfileFunc} />
+          <Navbar toggleUserProfile={toggleUserProfile} />
           <LoggedUserProfile
-            toogleUserProfile={toogleUserProfileFunc}
+            toggleUserProfile={toggleUserProfile}
             isOpen={isUserProfileOpen}
           />
           <StyledWrapper blurEffect={isUserProfileOpen}>
@@ -50,12 +48,4 @@ const HomeView = ({ auth }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  auth: state.user.auth,
-});
-
-HomeView.propTypes = {
-  auth: PropTypes.bool.isRequired,
-};
-
-export default connect(mapStateToProps)(HomeView);
+export default HomeView;

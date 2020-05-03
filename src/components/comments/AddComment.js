@@ -1,65 +1,29 @@
 import React, { useState } from "react";
-import styled from "styled-components";
-import PropTypes from "prop-types";
-import { withRouter } from "react-router-dom";
-
-// COMPONENTS
-import Textarea from "components/atoms/Textarea";
-import Button from "components/atoms/Button";
-import ValidateError from "components/atoms/ValidateError";
+import { useParams } from "react-router-dom";
+import AddItemModal from "components/modals/AddItemModal";
 
 // REDUX STUFF
-import { connect } from "react-redux";
-import { compose } from "redux";
+import { useSelector, useDispatch } from "react-redux";
 import { addComment } from "redux/actions/dataActions";
 
-const StyledWrapper = styled.form`
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-`;
-const StyledButton = styled(Button)`
-  align-self: flex-start;
-  margin-top: 15px;
-`;
-const StyledValidateError = styled(ValidateError)`
-  text-align: center;
-`;
-const AddComment = ({ errors, match, addComment }) => {
+const AddComment = () => {
+  const { post_id } = useParams();
   const [body, setBodyValue] = useState("");
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const post_id = match.params.post_id;
-    addComment({ body }, post_id);
+  const errors = useSelector((state) => state.UI.errorsAddComment);
+  const dispatch = useDispatch();
+  const handleSubmit = () => {
+    dispatch(addComment({ body }, post_id));
     setBodyValue("");
   };
   return (
-    <>
-      <StyledWrapper onSubmit={handleSubmit}>
-        <Textarea
-          value={body}
-          onChange={(e) => setBodyValue(e.target.value)}
-          placeholder="Share your thoughts"
-        />
-        <StyledButton type="submit" secondary>
-          Submit
-        </StyledButton>
-      </StyledWrapper>
-      {errors.body && <StyledValidateError>{errors.body}</StyledValidateError>}
-    </>
+    <AddItemModal
+      errors={errors}
+      setBodyValue={setBodyValue}
+      body={body}
+      addItemFunc={handleSubmit}
+      placeholder="Share your thoughts"
+    />
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.UI.errorsAddComment,
-});
-
-AddComment.propTypes = {
-  addComment: PropTypes.func.isRequired,
-  errors: PropTypes.object.isRequired,
-};
-
-export default compose(
-  connect(mapStateToProps, { addComment }),
-  withRouter
-)(AddComment);
+export default AddComment;

@@ -1,24 +1,25 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import theme from "utils/theme";
-import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
+import PropTypes from "prop-types";
 
 // COMPONENTS
-import HomeLink from "components/NavigationsLinks/HomeLink";
+import HomeLink from "components/Navbar/HomeLink";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const StyledWrapper = styled.div`
   width: 100%;
   position: "fixed";
   left: 0;
   top: 0;
-  width: 100%;
   height: 10vh;
   border-bottom: 1px solid ${theme.colors.primary};
   margin-bottom: 50px;
+  max-width: 960px;
+  margin: 0 auto;
 `;
 
 const StyledNavWrapper = styled.nav`
@@ -41,27 +42,26 @@ const StyledNavLink = styled(NavLink)`
   color: ${theme.colors.primary}!important;
 `;
 
-const Navbar = ({ toogleUserProfile, auth }) => (
-  <StyledWrapper>
-    <StyledNavWrapper auth={auth}>
-      {auth ? (
-        <HomeLink toogleUserProfile={toogleUserProfile} />
-      ) : (
-        <>
-          <StyledNavLink to="/login">Login</StyledNavLink>
-          <StyledNavLink to="/signup">Sign up</StyledNavLink>
-        </>
-      )}
-    </StyledNavWrapper>
-  </StyledWrapper>
-);
-
-Navbar.propTypes = {
-  auth: PropTypes.bool.isRequired,
+const Navbar = ({ toggleUserProfile }) => {
+  const auth = useSelector((state) => state.user.auth);
+  return (
+    <StyledWrapper>
+      <StyledNavWrapper auth={auth}>
+        {auth ? (
+          <HomeLink toggleUserProfile={toggleUserProfile} />
+        ) : (
+          <>
+            <StyledNavLink to="/login">Login</StyledNavLink>
+            <StyledNavLink to="/signup">Sign up</StyledNavLink>
+          </>
+        )}
+      </StyledNavWrapper>
+    </StyledWrapper>
+  );
 };
 
-const mapStateToProps = (state) => ({
-  auth: state.user.auth,
-});
+Navbar.propTypes = {
+  toggleUserProfile: PropTypes.func,
+};
 
-export default connect(mapStateToProps)(Navbar);
+export default Navbar;

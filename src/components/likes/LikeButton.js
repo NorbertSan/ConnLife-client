@@ -7,7 +7,7 @@ import LikeIcon from "assets/icons/like.svg";
 import NoLikeIcon from "assets/icons/noLike.svg";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { like, unlike } from "redux/actions/dataActions";
 
 const StyledButton = styled.button`
@@ -35,12 +35,15 @@ const StyledImage = styled.img`
     `}
 `;
 
-const LikeButton = ({ likesCount, big, post_id, like, unlike, likedPosts }) => {
+const LikeButton = ({ likesCount, big, post_id }) => {
+  const likedPosts = useSelector((state) => state.user.likes);
+  const dispatch = useDispatch();
   const handleClick = (e) => {
     e.preventDefault();
-    if (likedPosts.filter((item) => item.post_id === post_id).length === 0)
-      like(post_id);
-    else unlike(post_id);
+    const isLiked =
+      likedPosts.filter((item) => item.post_id === post_id).length !== 0;
+    if (isLiked) dispatch(unlike(post_id));
+    else dispatch(like(post_id));
   };
   return (
     <StyledButton onClick={handleClick}>
@@ -56,16 +59,9 @@ const LikeButton = ({ likesCount, big, post_id, like, unlike, likedPosts }) => {
     </StyledButton>
   );
 };
-
 LikeButton.propTypes = {
-  like: PropTypes.func.isRequired,
-  unlike: PropTypes.func.isRequired,
-  likedPosts: PropTypes.array.isRequired,
   post_id: PropTypes.number.isRequired,
+  likesCount: PropTypes.number.isRequired,
+  big: PropTypes.bool,
 };
-
-const mapStateToProps = (state) => ({
-  likedPosts: state.user.likes,
-});
-
-export default connect(mapStateToProps, { like, unlike })(LikeButton);
+export default LikeButton;

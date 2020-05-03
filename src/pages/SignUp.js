@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import styled from "styled-components";
-import PropTypes from "prop-types";
 import theme from "utils/theme";
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 
 // COMPONENTS
 import Loader from "react-loader-spinner";
@@ -13,7 +12,7 @@ import Heading from "components/atoms/Heading";
 import Navbar from "components/Navbar/Navbar";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { createAccount } from "redux/actions/userActions";
 
 const StyledWrapper = styled.form`
@@ -42,20 +41,35 @@ const StyledValidateError = styled(ValidateError)`
   margin-top: 5px;
 `;
 
-const SignUp = ({ createAccount, history, errors, loading, auth }) => {
-  const [email, setEmailValue] = useState("");
-  const [firstName, setFirstNameValue] = useState("");
-  const [lastName, setLastNameValue] = useState("");
-  const [password, setPasswordValue] = useState("");
-  const [confirmPassword, setConfirmPasswordValue] = useState("");
-  const [nickName, setNickNameValue] = useState("");
+const SignUp = () => {
+  const errors = useSelector((state) => state.UI.errorsSignUp);
+  const loading = useSelector((state) => state.UI.loadingSignUp);
+  const auth = useSelector((state) => state.user.auth);
+  const history = useHistory();
+  const dispatch = useDispatch();
   const handleSubmit = (e) => {
     e.preventDefault();
-    createAccount(
-      { email, firstName, lastName, password, confirmPassword, nickName },
-      history
-    );
+    dispatch(createAccount(inputsContent, history));
   };
+  const [inputsContent, setInputContent] = useReducer(
+    (state, newState) => ({
+      ...state,
+      ...newState,
+    }),
+    {
+      email: "",
+      firstName: "",
+      lastName: "",
+      password: "",
+      confirmPassword: "",
+      nickName: "",
+    }
+  );
+
+  const handleInputChange = (e) =>
+    setInputContent({
+      [e.target.name]: e.target.value,
+    });
   return (
     <>
       <Navbar />
@@ -68,8 +82,9 @@ const SignUp = ({ createAccount, history, errors, loading, auth }) => {
             <label>Email:</label>
             <Input
               secondary
-              value={email}
-              onChange={(e) => setEmailValue(e.target.value)}
+              name="email"
+              value={inputsContent.email}
+              onChange={handleInputChange}
             />
             {errors.email && (
               <StyledValidateError>{errors.email}</StyledValidateError>
@@ -79,8 +94,9 @@ const SignUp = ({ createAccount, history, errors, loading, auth }) => {
             <label>First name:</label>
             <Input
               secondary
-              value={firstName}
-              onChange={(e) => setFirstNameValue(e.target.value)}
+              name="firstName"
+              value={inputsContent.firstName}
+              onChange={handleInputChange}
             />
             {errors.firstName && (
               <StyledValidateError>{errors.firstName}</StyledValidateError>
@@ -90,8 +106,9 @@ const SignUp = ({ createAccount, history, errors, loading, auth }) => {
             <label>Last name:</label>
             <Input
               secondary
-              value={lastName}
-              onChange={(e) => setLastNameValue(e.target.value)}
+              name="lastName"
+              value={inputsContent.lastName}
+              onChange={handleInputChange}
             />
             {errors.lastName && (
               <StyledValidateError>{errors.lastName}</StyledValidateError>
@@ -102,8 +119,9 @@ const SignUp = ({ createAccount, history, errors, loading, auth }) => {
             <Input
               secondary
               type="password"
-              value={password}
-              onChange={(e) => setPasswordValue(e.target.value)}
+              name="password"
+              value={inputsContent.password}
+              onChange={handleInputChange}
             />
             {errors.password && (
               <StyledValidateError>{errors.password}</StyledValidateError>
@@ -114,16 +132,18 @@ const SignUp = ({ createAccount, history, errors, loading, auth }) => {
             <Input
               secondary
               type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPasswordValue(e.target.value)}
+              name="confirmPassword"
+              value={inputsContent.confirmPassword}
+              onChange={handleInputChange}
             />
           </StyledInputField>
           <StyledInputField>
             <label>Nick name:</label>
             <Input
               secondary
-              value={nickName}
-              onChange={(e) => setNickNameValue(e.target.value)}
+              name="nickName"
+              value={inputsContent.nickName}
+              onChange={handleInputChange}
             />
             {errors.nickName && (
               <StyledValidateError>{errors.nickName}</StyledValidateError>
@@ -147,17 +167,4 @@ const SignUp = ({ createAccount, history, errors, loading, auth }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.UI.errorsSignUp,
-  loading: state.UI.loadingSignUp,
-  auth: state.user.auth,
-});
-
-SignUp.propTypes = {
-  errors: PropTypes.object.isRequired,
-  loading: PropTypes.bool.isRequired,
-  createAccount: PropTypes.func.isRequired,
-  auth: PropTypes.bool.isRequired,
-};
-
-export default connect(mapStateToProps, { createAccount })(SignUp);
+export default SignUp;

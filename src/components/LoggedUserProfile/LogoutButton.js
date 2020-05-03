@@ -1,14 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 import theme from "utils/theme";
-import PropTypes from "prop-types";
 
 // COMPONENTS
 import LogoutIcon from "assets/icons/logout.svg";
 import Icon from "components/atoms/Icon";
-
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logoutUser } from "redux/actions/userActions";
 
 const StyledWrapper = styled.div`
@@ -19,15 +17,15 @@ const StyledWrapper = styled.div`
   font-size: ${theme.fontSize.s};
 `;
 
-const LogoutButton = ({ logoutUser }) => (
-  <StyledWrapper onClick={logoutUser}>
-    <Icon src={LogoutIcon} />
-    <span>Logout</span>
-  </StyledWrapper>
-);
-
-LogoutButton.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
+const LogoutButton = () => {
+  const dispatch = useDispatch();
+  const handleLogoutUser = () => dispatch(logoutUser());
+  return (
+    <StyledWrapper onClick={handleLogoutUser}>
+      <Icon src={LogoutIcon} />
+      <span>Logout</span>
+    </StyledWrapper>
+  );
 };
 
-export default connect(null, { logoutUser })(LogoutButton);
+export default LogoutButton;

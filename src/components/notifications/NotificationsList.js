@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import NotificationItem from "components/notifications/NotificationItem";
 
 // REDUX
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const StyledWrapper = styled.ul`
   display: flex;
@@ -23,7 +23,8 @@ const StyledAlert = styled.div`
   font-size: ${theme.fontSize.m};
 `;
 
-const NotificationsList = ({ type, notifications }) => {
+const NotificationsList = ({ type }) => {
+  const notifications = useSelector((state) => state.user.notifications);
   const notificationsToDisplay =
     type === "new"
       ? notifications.filter((item) => item.seen === 0)
@@ -44,13 +45,8 @@ const NotificationsList = ({ type, notifications }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  notifications: state.user.notifications,
-});
-
 NotificationsList.propTypes = {
-  notifications: PropTypes.array.isRequired,
   type: PropTypes.string.isRequired, // new || all
 };
 
-export default connect(mapStateToProps)(NotificationsList);
+export default NotificationsList;

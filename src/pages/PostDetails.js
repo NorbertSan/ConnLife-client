@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import theme from "utils/theme";
-import { Link, Redirect } from "react-router-dom";
-import PropTypes from "prop-types";
+import { Link, Redirect, useParams, useLocation } from "react-router-dom";
 
 // COMPONENTS
 import BackButton from "components/atoms/BackButton";
@@ -11,7 +10,7 @@ import PostItemDetailsView from "components/posts/PostItemDetailsView";
 import Alert404 from "components/atoms/Alert404";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getSinglePost } from "redux/actions/dataActions";
 
 const StyledWrapper = styled.div`
@@ -22,23 +21,23 @@ const StyledHeader = styled.header`
   align-items: center;
   padding-left: 30px;
   border-bottom: 1px solid ${theme.colors.secondary};
+  max-width: 960px;
+  margin: 0 auto;
 `;
 const StyledNickName = styled(NickName)`
   text-align: center;
   margin-left: 100px;
 `;
 
-const PostDetailsView = ({
-  auth,
-  postNotFound,
-  match,
-  getSinglePost,
-  location,
-}) => {
+const PostDetailsView = () => {
+  const auth = useSelector((state) => state.user.auth);
+  const postNotFound = useSelector((state) => state.UI.postNotFound);
+  const dispatch = useDispatch();
+  const { post_id } = useParams();
+  const location = useLocation();
   useEffect(() => {
-    const post_id = match.params.post_id;
-    getSinglePost(post_id);
-  }, [getSinglePost, match]);
+    dispatch(getSinglePost(post_id));
+  }, [dispatch, post_id]);
   return (
     <>
       {postNotFound ? (
@@ -63,15 +62,5 @@ const PostDetailsView = ({
     </>
   );
 };
-const mapStateToProps = (state) => ({
-  auth: state.user.auth,
-  postNotFound: state.UI.postNotFound,
-});
 
-PostDetailsView.propTypes = {
-  auth: PropTypes.bool.isRequired,
-  getSinglePost: PropTypes.func.isRequired,
-  postNotFound: PropTypes.bool.isRequired,
-};
-
-export default connect(mapStateToProps, { getSinglePost })(PostDetailsView);
+export default PostDetailsView;

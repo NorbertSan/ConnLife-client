@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import styled, { css } from "styled-components";
 import theme from "utils/theme";
 
 // AVATARS
 import avatars from "utils/avatars";
-
+// HOOK
+import useDetectOutsideClick from "hooks/useDetectOutsideClick";
 import EditIcon from "assets/icons/edit.svg";
 // COMPONENTS
 import Button from "components/atoms/Button";
 import XButton from "components/atoms/XButton";
 
 // REDUX
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { updateAvatar } from "redux/actions/userActions";
 
 const StyledButton = styled.button`
@@ -77,20 +78,25 @@ const StyledAvatar = styled.img`
     `}
 `;
 
-const EditAvatar = ({ avatar, updateAvatar, nickName }) => {
-  const [dialogOpen, toogleDialog] = useState(false);
+const EditAvatar = () => {
+  const avatar = useSelector((state) => state.user.userInfo.avatar);
+  const nickName = useSelector((state) => state.user.userInfo.nickName);
+  const dispatch = useDispatch();
+  const [dialogOpen, toggleDialogOpen] = useState(false);
   const [newAvatar, changeAvatar] = useState(avatar);
+  const modalRef = useRef(null);
+  useDetectOutsideClick(modalRef, toggleDialogOpen);
   const handleUpdateAvatar = () =>
-    updateAvatar({ avatar: newAvatar, nickName });
+    dispatch(updateAvatar({ avatar: newAvatar, nickName }));
   return (
     <>
-      <StyledButton onClick={() => toogleDialog(true)}>
+      <StyledButton onClick={() => toggleDialogOpen(true)}>
         <StyledIcon src={EditIcon} />
       </StyledButton>
       {dialogOpen && (
         <>
-          <StyledDialog>
-            <XButton onClick={() => toogleDialog(false)}>X</XButton>
+          <StyledDialog ref={modalRef}>
+            <XButton onClick={() => toggleDialogOpen(false)}>X</XButton>
             {Object.keys(avatars).map((item, index) => (
               <StyledAvatar
                 key={`avatar:${index}`}
@@ -110,9 +116,4 @@ const EditAvatar = ({ avatar, updateAvatar, nickName }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  avatar: state.user.userInfo.avatar,
-  nickName: state.user.userInfo.nickName,
-});
-
-export default connect(mapStateToProps, { updateAvatar })(EditAvatar);
+export default EditAvatar;

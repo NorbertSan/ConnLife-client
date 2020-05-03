@@ -16,7 +16,7 @@ import CalendarIcon from "assets/icons/calendar.svg";
 import WebsiteIcon from "assets/icons/website.svg";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -43,8 +43,10 @@ const StyledExtraInfo = styled.div`
   }
 `;
 
-const UserInfo = ({ userInfo, loggedUserInfo, loggedNickName }) => {
+const UserInfo = ({ loggedUserInfo }) => {
   let userInfoToDisplay;
+  const userInfo = useSelector((state) => state.data.userInfo);
+  const loggedNickName = useSelector((state) => state.user.userInfo.nickName);
   if (loggedUserInfo) userInfoToDisplay = { ...loggedUserInfo };
   else userInfoToDisplay = { ...userInfo };
   return (
@@ -79,16 +81,8 @@ const UserInfo = ({ userInfo, loggedUserInfo, loggedNickName }) => {
     </StyledWrapper>
   );
 };
-
-const mapStateToProps = (state) => ({
-  userInfo: state.data.userInfo,
-  loggedNickName: state.user.userInfo.nickName,
-});
-
 UserInfo.propTypes = {
-  userInfo: PropTypes.object.isRequired,
   loggedUserInfo: PropTypes.object,
-  loggedNickName: PropTypes.string,
 };
 
-export default connect(mapStateToProps)(UserInfo);
+export default UserInfo;

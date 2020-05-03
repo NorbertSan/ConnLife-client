@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, Redirect } from "react-router-dom";
 import theme from "utils/theme";
-import PropTypes from "prop-types";
 
 // COMPONENTS
 import BackButton from "components/atoms/BackButton";
@@ -11,7 +10,7 @@ import NotificationsTypeSelect from "components/notifications/NotificationsTypeS
 import NotificationsList from "components/notifications/NotificationsList";
 
 // REDUX STUFF
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 const StyledWrapper = styled.section`
   margin: auto;
@@ -25,12 +24,15 @@ const StyledHeader = styled.header`
   span {
     font-size: ${theme.fontSize.s};
   }
+  max-width: 960px;
+  margin: 0 auto;
 `;
 const StyledNickName = styled(NickName)`
   margin-left: 60px;
 `;
 
-const Notifications = ({ auth }) => {
+const Notifications = () => {
+  const auth = useSelector((state) => state.user.auth);
   const [type, changeType] = useState("new");
   return (
     <StyledWrapper>
@@ -53,11 +55,5 @@ const Notifications = ({ auth }) => {
     </StyledWrapper>
   );
 };
-const mapStateToProps = (state) => ({
-  auth: state.user.auth,
-});
-Notifications.propTypes = {
-  auth: PropTypes.bool.isRequired,
-};
 
-export default connect(mapStateToProps)(Notifications);
+export default Notifications;
