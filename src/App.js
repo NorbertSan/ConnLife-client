@@ -18,7 +18,8 @@ import SignUp from "pages/SignUp";
 import Notifications from "pages/Notifications";
 import NotFound from "pages/NotFound";
 
-const BASE_URL = "https://connlifeserver.herokuapp.com";
+// const BASE_URL = "https://connlifeserver.herokuapp.com";
+const BASE_URL = "http://localhost:5000";
 axios.defaults.baseURL = BASE_URL;
 
 const authToken = () => {

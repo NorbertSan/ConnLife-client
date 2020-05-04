@@ -35,15 +35,17 @@ import {
   LOADING_EDIT_POST,
   CLEAR_LOADING_EDIT_POST,
   SET_ERRORS_EDIT_POST,
+  SET_ALL_POSTS_FETCHED,
 } from "redux/types";
 import axios from "axios";
 
-export const getAllPosts = () => (dispatch) => {
+export const getAllPosts = (startPosition) => (dispatch) => {
   dispatch({ type: LOADING_POSTS });
   axios
-    .get("/posts")
+    .get(`/posts/${startPosition}`)
     .then((res) => {
-      dispatch({ type: SET_POSTS, payload: res.data });
+      if (res.data.length === 0) dispatch({ type: SET_ALL_POSTS_FETCHED });
+      else dispatch({ type: SET_POSTS, payload: res.data });
       dispatch({ type: CLEAR_LOADING_POSTS });
     })
     .catch((err) => {

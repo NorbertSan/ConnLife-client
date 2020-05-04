@@ -21,7 +21,7 @@ import { useSelector } from "react-redux";
 const StyledWrapper = styled.article`
   padding: 30px 10px;
   display: flex;
-  border-bottom: 1px solid ${theme.colors.primary};
+  border-top: 1px solid ${theme.colors.primary};
   position: relative;
 `;
 const StyledContainer = styled.div`

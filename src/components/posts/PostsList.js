@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 // COMPONENTS
@@ -14,33 +14,36 @@ const StyledWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const StyledAlert = styled.h3`
-  text-align: center;
-  margin-top: 40px;
-`;
 
 const PostsList = () => {
+  const [startPosition, setStartPosition] = useState(0);
+  const allPostFetched = useSelector((state) => state.UI.allPostFetched);
   const posts = useSelector((state) => state.data.posts);
   const loading = useSelector((state) => state.UI.loadingPosts);
   const loadingAddPost = useSelector((state) => state.UI.loadingAddPost);
   const dispatch = useDispatch();
-  useEffect(() => dispatch(getAllPosts()), [dispatch]);
+  useEffect(() => {
+    dispatch(getAllPosts(startPosition));
+  }, [dispatch, startPosition]);
+  useEffect(() => {
+    const listener = (e) => {
+      if (allPostFetched) return;
+      const limit = document.body.offsetHeight - window.innerHeight;
+      const presentPosition = window.scrollY;
+      if (presentPosition + 60 > limit) setStartPosition(startPosition + 5);
+    };
+    document.addEventListener("scroll", listener);
+    return () => document.removeEventListener("scroll", listener);
+  });
+
   return (
     <StyledWrapper>
-      {loading ? (
-        <PostsSkeleton />
-      ) : (
-        <>
-          {loadingAddPost && <SinglePostSkeleton />}
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <PostItem post={post} key={`post:${post.post_id}`} />
-            ))
-          ) : (
-            <StyledAlert>There is no posts</StyledAlert>
-          )}
-        </>
-      )}
+      {loadingAddPost && <SinglePostSkeleton />}
+      {posts.length > 0 &&
+        posts.map((post, index) => (
+          <PostItem post={post} key={`post:${post.post_id}`} />
+        ))}
+      {loading && <PostsSkeleton />}
     </StyledWrapper>
   );
 };

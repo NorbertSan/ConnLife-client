@@ -23,7 +23,7 @@ const EditPost = ({ post_id }) => {
     const editPost = posts.find((item) => item.post_id === post_id);
     setBodyValue(editPost.body);
     dispatch({ type: CLEAR_SET_ERRORS_EDIT_POST });
-  }, [isModalOpen, post_id, posts, dispatch]);
+  }, [isModalOpen]);
 
   const handlePostEdit = () => dispatch(editPostAction({ body }, post_id));
 

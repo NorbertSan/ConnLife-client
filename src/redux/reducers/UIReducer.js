@@ -41,6 +41,8 @@ import {
   CLEAR_LOADING_EDIT_POST,
   SET_ERRORS_EDIT_POST,
   CLEAR_SET_ERRORS_EDIT_POST,
+  SET_ALL_POSTS_FETCHED,
+  SET_POSTS,
 } from "redux/types";
 const initialState = {
   loadingLogin: false,
@@ -65,6 +67,7 @@ const initialState = {
   errorsCommentEdit: {},
   loadingUpdatePost: false,
   errorsPostEdit: {},
+  allPostFetched: false,
 };
 
 export default (state = initialState, action) => {
@@ -282,6 +285,16 @@ export default (state = initialState, action) => {
       return {
         ...state,
         errorsPostEdit: null,
+      };
+    case SET_ALL_POSTS_FETCHED:
+      return {
+        ...state,
+        allPostFetched: true,
+      };
+    case SET_POSTS:
+      return {
+        ...state,
+        allPostFetched: false,
       };
     default:
       return { ...state };

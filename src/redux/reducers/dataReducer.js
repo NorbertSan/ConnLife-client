@@ -25,7 +25,7 @@ export default (state = initialState, action) => {
     case SET_POSTS:
       return {
         ...state,
-        posts: action.payload,
+        posts: [...state.posts, ...action.payload],
       };
     case SET_USER:
       return {
